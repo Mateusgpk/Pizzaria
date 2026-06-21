@@ -11,17 +11,14 @@ public class Pedido {
     public Pedido() {
         listaPizza = new ArrayList<>();
     }
-
     public Pedido(Cliente cliente) {
         this.cliente = cliente;
         this.listaPizza = new ArrayList<>();
         this.valorTotal = 0.0;
     }
-
     public Cliente getCliente() {
         return cliente;
     }
-
     public void setCliente(Cliente cliente) {
         this.cliente = cliente;
     }
