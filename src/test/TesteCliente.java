@@ -1,3 +1,8 @@
+package test;
+
+import DAO.GerenciadorCliente;
+import model.Cliente;
+
 public class TesteCliente {
 
     public static void main(String[] args) {
@@ -30,7 +35,7 @@ public class TesteCliente {
         try {
             Cliente dadosAtualizados = new Cliente("Rafael", "Tsuji Uchida", "41888888888");
             gerenciador.atualizarCliente("41888888888", dadosAtualizados);
-            System.out.println("SUCESSO: Cliente atualizado.");
+            System.out.println("SUCESSO: Model.Cliente atualizado.");
         } catch (IllegalArgumentException e) {
             System.err.println("FALHA ao atualizar: " + e.getMessage());
         }
@@ -38,9 +43,9 @@ public class TesteCliente {
         System.out.println("\nExcluindo o cliente Mateus...");
         boolean removido = gerenciador.removerCliente("41777777777");
         if (removido) {
-            System.out.println("SUCESSO: Cliente excluido.");
+            System.out.println("SUCESSO: Model.Cliente excluido.");
         } else {
-            System.err.println("FALHA: Cliente não encontrado.");
+            System.err.println("FALHA: Model.Cliente não encontrado.");
         }
 
         System.out.println("\n=== ESTADO FINAL ===");

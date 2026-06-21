@@ -1,3 +1,7 @@
+package DAO;
+
+import model.Cliente;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +27,7 @@ public class GerenciadorCliente {
      * Cadastra um novo cliente no sistema.
      * Impede o cadastro de telefones duplicados.
      *
-     * @param cliente O objeto Cliente a ser salvo.
+     * @param cliente O objeto Model.Cliente a ser salvo.
      * @throws IllegalArgumentException Se o telefone já estiver cadastrado.
      */
     public void adicionarCliente(Cliente cliente) throws IllegalArgumentException {
@@ -57,10 +61,10 @@ public class GerenciadorCliente {
         Cliente clienteExistente = buscarPorTelefone(telefoneAtual);
 
         if (clienteExistente == null) {
-            throw new IllegalArgumentException("Cliente não encontrado para atualização.");
+            throw new IllegalArgumentException("Model.Cliente não encontrado para atualização.");
         }
 
-        // Atualiza os dados mantendo a referência do objeto (o que preserva o Pedido atual dele)
+        // Atualiza os dados mantendo a referência do objeto (o que preserva o Model.Pedido atual dele)
         clienteExistente.setNome(clienteEditado.getNome());
         clienteExistente.setSobrenome(clienteEditado.getSobrenome());
         clienteExistente.setTelefone(clienteEditado.getTelefone());
@@ -84,7 +88,7 @@ public class GerenciadorCliente {
      * Busca um cliente exato pelo seu número de telefone.
      *
      * @param telefone O telefone a ser buscado.
-     * @return O objeto Cliente correspondente, ou null se não encontrado.
+     * @return O objeto Model.Cliente correspondente, ou null se não encontrado.
      */
     public Cliente buscarPorTelefone(String telefone) {
         for (Cliente c : this.clientes) {

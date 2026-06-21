@@ -1,6 +1,8 @@
+package model;
+
 /**
  * Classe que representa um cliente da pizzaria.
- * Armazena os dados pessoais de cada Cliente,
+ * Armazena os dados pessoais de cada Model.Cliente,
  * além dos dados de contato.
  *
  * @version 1.0
@@ -64,7 +66,7 @@ public class Cliente {
     /**
      * Retorna o pedido atual vinculado a este cliente.
      *
-     * @return O objeto Pedido associado.
+     * @return O objeto Model.Pedido associado.
      */
     public Pedido getPedido() {
         return pedido;
@@ -73,7 +75,7 @@ public class Cliente {
     /**
      * Vincula um pedido a este cliente.
      *
-     * @param pedido O objeto Pedido a ser associado.
+     * @param pedido O objeto Model.Pedido a ser associado.
      */
     public void setPedido(Pedido pedido) {
         this.pedido = pedido;
