@@ -3,12 +3,22 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class Pizza {
+public abstract class Pizza implements Forma{
 
     private Double cms;
+
+    public Double getCms() {
+        return cms;
+    }
+
+    public void setCms(Double cms) {
+        this.cms = cms;
+    }
+
     private Double precoCm;
     private Double preco;
     private List<Sabores> sabores = new ArrayList<>();
+    private Forma forma;
 
     public Pizza(List<Sabores> sabores){
         this.sabores=sabores;
@@ -16,7 +26,6 @@ public abstract class Pizza {
         this.preco=precoCm*cms;
     }
 
-    public abstract void calculaCm();
 
     public void alterarPizza(List<Sabores> sabores){
         this.sabores=sabores;
