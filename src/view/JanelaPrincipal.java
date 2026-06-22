@@ -32,8 +32,8 @@ public class JanelaPrincipal extends JFrame {
         cardLayout = new CardLayout();
         painelCards = new JPanel(cardLayout);
 
-        JPanel telaClientes = new JPanel();
-        telaClientes.add(new JLabel("Conteúdo da Tela de Clientes"));
+        TelaCliente telaClientes = new TelaCliente();
+        painelCards.add(telaClientes, "CLIENTES");
 
         JPanel telaPizzas = new JPanel();
         telaPizzas.add(new JLabel("Conteúdo da Tela de Pizzas"));
