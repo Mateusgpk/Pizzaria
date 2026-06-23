@@ -1,8 +1,11 @@
 package view;
 
+import util.mascaraTelefone;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 
 /**
@@ -102,6 +105,10 @@ public class TelaCliente extends JPanel {
 
         tabelaClientes = new JTable(modeloTabela);
         tabelaClientes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        tabelaClientes.getTableHeader().setReorderingAllowed(false);
+
+        tabelaClientes.getColumnModel().getColumn(2).setCellRenderer(new mascaraTelefone());
+
         JScrollPane scrollPane = new JScrollPane(tabelaClientes);
         painel.add(scrollPane, BorderLayout.CENTER);
 

@@ -14,7 +14,7 @@ import java.util.List;
 public class GerenciadorCliente {
 
     // Lista em memória que armazena todos os clientes ativos.
-    private List<Cliente> clientes;
+    private final List<Cliente> clientes;
 
     /**
      * Construtor da lista de clientes, instanciando vazia.
@@ -27,7 +27,7 @@ public class GerenciadorCliente {
      * Cadastra um novo cliente no sistema.
      * Impede o cadastro de telefones duplicados.
      *
-     * @param cliente O objeto Model.Cliente a ser salvo.
+     * @param cliente O objeto Cliente a ser salvo.
      * @throws IllegalArgumentException Se o telefone já estiver cadastrado.
      */
     public void adicionarCliente(Cliente cliente) throws IllegalArgumentException {
@@ -64,7 +64,7 @@ public class GerenciadorCliente {
             throw new IllegalArgumentException("Model.Cliente não encontrado para atualização.");
         }
 
-        // Atualiza os dados mantendo a referência do objeto (o que preserva o Model.Pedido atual dele)
+        // Atualiza os dados mantendo a referência do objeto (o que preserva o Pedido atual dele)
         clienteExistente.setNome(clienteEditado.getNome());
         clienteExistente.setSobrenome(clienteEditado.getSobrenome());
         clienteExistente.setTelefone(clienteEditado.getTelefone());
@@ -107,7 +107,7 @@ public class GerenciadorCliente {
      */
     public List<Cliente> filtrarClientes(String termoBusca) {
         if (termoBusca == null || termoBusca.trim().isEmpty()) {
-            return listarTodos(); // Retorna todos se o filtro estiver vazio
+            return listarTodos();
         }
 
         List<Cliente> resultado = new ArrayList<>();

@@ -1,5 +1,8 @@
 package view;
 
+import DAO.GerenciadorCliente;
+import controller.ClienteController;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -11,8 +14,8 @@ import java.awt.event.ActionEvent;
  */
 public class JanelaPrincipal extends JFrame {
 
-    private CardLayout cardLayout;
-    private JPanel painelCards;
+    private final CardLayout cardLayout;
+    private final JPanel painelCards;
     private JLabel lblTituloHeader;
 
     public JanelaPrincipal() {
@@ -32,7 +35,10 @@ public class JanelaPrincipal extends JFrame {
         cardLayout = new CardLayout();
         painelCards = new JPanel(cardLayout);
 
+        GerenciadorCliente daoCliente = new GerenciadorCliente();
         TelaCliente telaClientes = new TelaCliente();
+        ClienteController clienteController = new ClienteController(telaClientes, daoCliente);
+
         painelCards.add(telaClientes, "CLIENTES");
 
         JPanel telaPizzas = new JPanel();

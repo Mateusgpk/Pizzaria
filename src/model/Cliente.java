@@ -24,7 +24,7 @@ public class Cliente {
     public Cliente(String nome, String sobrenome, String telefone) {
         this.nome = nome;
         this.sobrenome = sobrenome;
-        this.telefone = telefone;
+        setTelefone(telefone);
     }
 
     /**
@@ -96,6 +96,10 @@ public class Cliente {
      * @param telefone O novo telefone a ser atribuído.
      */
     public void setTelefone(String telefone) {
+        if (telefone == null || !telefone.matches("\\d{10,11}")) {
+            throw new IllegalArgumentException("O telefone deve ter 10 ou 11 dígitos.");
+        }
+
         this.telefone = telefone;
     }
 
