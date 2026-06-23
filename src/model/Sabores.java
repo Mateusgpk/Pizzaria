@@ -4,6 +4,11 @@ public class Sabores {
     private TipoSabor tipoSabor;
     private String nome;
 
+    public Sabores(TipoSabor tipoSabor, String nome){
+        this.tipoSabor=tipoSabor;
+        this.nome=nome;
+    }
+
     public TipoSabor getTipoSabor() {
         return tipoSabor;
     }

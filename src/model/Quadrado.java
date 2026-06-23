@@ -14,6 +14,7 @@ public class Quadrado extends Pizza {
         validarDimensao(lado);
         this.lado = lado;
         this.setCms(calcularArea());
+        setPreco(calculaPrecoInteiro());
     }
 
     @Override
@@ -63,6 +64,6 @@ public class Quadrado extends Pizza {
 
     @Override
     public String getNomeForma() {
-        return "model.Quadrado";
+        return "Quadrado";
     }
 }

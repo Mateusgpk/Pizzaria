@@ -14,6 +14,7 @@ public class Triangulo extends Pizza {
         validarDimensao(lado);
         this.lado = lado;
         this.setCms(calcularArea());
+        setPreco(calculaPrecoInteiro());
     }
 
     @Override

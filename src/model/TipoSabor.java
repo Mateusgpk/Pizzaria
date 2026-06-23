@@ -2,7 +2,12 @@ package model;
 
 public class TipoSabor {
     private String nome;
-    private Double preco;
+    private Double precocm;
+
+    public TipoSabor (String nome, Double precocm){
+        this.nome=nome;
+        this.precocm=precocm;
+    }
 
     public String getNome() {
         return nome;
@@ -13,10 +18,10 @@ public class TipoSabor {
     }
 
     public Double getPreco() {
-        return preco;
+        return precocm;
     }
 
     public void setPreco(Double preco) {
-        this.preco = preco;
+        this.precocm = preco;
     }
 }

@@ -14,6 +14,7 @@ public class Circulo extends Pizza {
         validarDimensao(raio);
         this.raio = raio;
         this.setCms(calcularArea());
+        setPreco(calculaPrecoInteiro());
     }
 
     @Override
@@ -63,7 +64,7 @@ public class Circulo extends Pizza {
 
     @Override
     public String getNomeForma() {
-        return "model.Circulo";
+        return "Circulo";
     }
 
 }
