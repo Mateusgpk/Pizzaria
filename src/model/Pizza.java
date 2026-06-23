@@ -29,7 +29,7 @@ public abstract class Pizza implements Forma{
     public Pizza(List<Sabores> sabores){
         this.sabores=sabores;
         calculaPreco(sabores);
-        this.preco=calculaPrecoInteiro();
+
     }
     public Double calculaPrecoInteiro(){
         return calculaPreco(this.sabores)*cms;
@@ -38,7 +38,6 @@ public abstract class Pizza implements Forma{
     public void alterarPizza(List<Sabores> sabores){
         this.sabores=sabores;
         calculaPreco(sabores);
-        this.preco=calculaPrecoInteiro();
     }
 
     public Double calculaPreco(List<Sabores> sabores){
