@@ -1,19 +1,20 @@
 package model;
 
-public class Circulo extends Forma {
+import java.util.List;
+
+public class Circulo extends Pizza {
 
     public static final double raioMinimo = 7.0;
     public static final double raioMaximo = 23.0;
 
     private double raio;
 
-    public Circulo() {
-        this.raio = raioMinimo;
-    }
-
-    public Circulo(double raio) {
+    public Circulo(double raio, List<Sabores> sabores) {
+        super(sabores);
         validarDimensao(raio);
         this.raio = raio;
+        this.setCms(calcularArea());
+        setPreco(calculaPrecoInteiro());
     }
 
     @Override
@@ -63,6 +64,7 @@ public class Circulo extends Forma {
 
     @Override
     public String getNomeForma() {
-        return "model.Circulo";
+        return "Circulo";
     }
+
 }

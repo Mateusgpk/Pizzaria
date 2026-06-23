@@ -1,19 +1,20 @@
 package model;
 
-public class Quadrado extends Forma {
+import java.util.List;
+
+public class Quadrado extends Pizza {
 
     public static final double ladoMinimo = 10.0;
     public static final double ladoMaximo = 40.0;
 
     private double lado;
 
-    public Quadrado() {
-        this.lado = ladoMinimo;
-    }
-
-    public Quadrado(double lado) {
+    public Quadrado(double lado, List<Sabores> sabores) {
+        super(sabores);
         validarDimensao(lado);
         this.lado = lado;
+        this.setCms(calcularArea());
+        setPreco(calculaPrecoInteiro());
     }
 
     @Override
@@ -63,6 +64,6 @@ public class Quadrado extends Forma {
 
     @Override
     public String getNomeForma() {
-        return "model.Quadrado";
+        return "Quadrado";
     }
 }
