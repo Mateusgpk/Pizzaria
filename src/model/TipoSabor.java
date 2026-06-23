@@ -21,6 +21,11 @@ public class TipoSabor {
         return precocm;
     }
 
+    @Override
+    public String toString() {
+        return nome;
+    }
+
     public void setPreco(Double preco) {
         this.precocm = preco;
     }

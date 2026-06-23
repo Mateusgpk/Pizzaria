@@ -2,6 +2,8 @@ package view;
 
 import DAO.GerenciadorCliente;
 import controller.ClienteController;
+import DAO.GerenciadorSabores;
+import controller.PizzaController;
 
 import javax.swing.*;
 import java.awt.*;
@@ -41,8 +43,9 @@ public class JanelaPrincipal extends JFrame {
 
         painelCards.add(telaClientes, "CLIENTES");
 
-        JPanel telaPizzas = new JPanel();
-        telaPizzas.add(new JLabel("Conteúdo da Tela de Pizzas"));
+        GerenciadorSabores daoSabores = new GerenciadorSabores();
+        TelaPizza telaPizzas = new TelaPizza(daoSabores.listarTipos());
+        new PizzaController(telaPizzas, daoSabores);
 
         JPanel telaPedidos = new JPanel();
         telaPedidos.add(new JLabel("Conteúdo da Tela de Pedidos"));
