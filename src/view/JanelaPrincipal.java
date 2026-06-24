@@ -4,6 +4,7 @@ import DAO.GerenciadorCliente;
 import controller.ClienteController;
 import DAO.GerenciadorSabores;
 import controller.PizzaController;
+import model.Cliente;
 
 import javax.swing.*;
 import java.awt.*;
@@ -38,6 +39,12 @@ public class JanelaPrincipal extends JFrame {
         painelCards = new JPanel(cardLayout);
 
         GerenciadorCliente daoCliente = new GerenciadorCliente();
+
+        daoCliente.adicionarCliente(new Cliente("Nicolas", "Mendes Fernandes", "41998710753"));
+        daoCliente.adicionarCliente(new Cliente("Mateus", "Gabriel Kuduavski", "41996441322"));
+        daoCliente.adicionarCliente(new Cliente("Rafael", "Tsuji Uchida", "41988519427"));
+        daoCliente.adicionarCliente(new Cliente("Carlos", "Eduardo de Moraes Vital", "41997253597"));
+
         TelaCliente telaClientes = new TelaCliente();
         ClienteController clienteController = new ClienteController(telaClientes, daoCliente);
 

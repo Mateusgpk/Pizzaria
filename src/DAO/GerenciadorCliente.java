@@ -61,10 +61,13 @@ public class GerenciadorCliente {
         Cliente clienteExistente = buscarPorTelefone(telefoneAtual);
 
         if (clienteExistente == null) {
-            throw new IllegalArgumentException("Model.Cliente não encontrado para atualização.");
+            throw new IllegalArgumentException("Cliente não encontrado para atualização.");
         }
 
-        // Atualiza os dados mantendo a referência do objeto (o que preserva o Pedido atual dele)
+        if (buscarPorTelefone(clienteEditado.getTelefone()) != null && !clienteEditado.getTelefone().equals(clienteExistente.getTelefone())) {
+            throw new IllegalArgumentException("Já existe um cliente cadastrado com este telefone.");
+        }
+
         clienteExistente.setNome(clienteEditado.getNome());
         clienteExistente.setSobrenome(clienteEditado.getSobrenome());
         clienteExistente.setTelefone(clienteEditado.getTelefone());
@@ -88,7 +91,7 @@ public class GerenciadorCliente {
      * Busca um cliente exato pelo seu número de telefone.
      *
      * @param telefone O telefone a ser buscado.
-     * @return O objeto Model.Cliente correspondente, ou null se não encontrado.
+     * @return O objeto Cliente correspondente, ou null se não encontrado.
      */
     public Cliente buscarPorTelefone(String telefone) {
         for (Cliente c : this.clientes) {
