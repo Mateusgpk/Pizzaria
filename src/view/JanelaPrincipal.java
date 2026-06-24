@@ -1,14 +1,15 @@
 package view;
 
 import DAO.GerenciadorCliente;
-import controller.ClienteController;
 import DAO.GerenciadorSabores;
+import controller.ClienteController;
 import controller.PizzaController;
 import model.Cliente;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.net.URL;
 
 /**
  * Janela principal do sistema
@@ -23,6 +24,15 @@ public class JanelaPrincipal extends JFrame {
 
     public JanelaPrincipal() {
         setTitle("Sistema de Pizzaria");
+
+        URL caminhoIcone = getClass().getResource("/img/icon.jpg");
+        if (caminhoIcone != null) {
+            Image icone = Toolkit.getDefaultToolkit().getImage(caminhoIcone);
+            setIconImage(icone);
+        } else {
+            System.err.println("Aviso: Imagem do ícone não encontrada no caminho especificado.");
+        }
+
         setSize(1024, 720);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
