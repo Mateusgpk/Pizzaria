@@ -2,9 +2,7 @@ package view;
 
 import DAO.GerenciaPedidoPizza;
 import DAO.GerenciadorSabores;
-import model.Cliente;
-import model.Sabores;
-import model.TipoSabor;
+import model.*;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -368,6 +366,47 @@ public class TelaPedido extends JPanel {
         cbSabor2.setEnabled(ativo);
     }
 
+    /**
+     * Atualiza os componentes visuais da tela com os dados do pedido
+     * que está atualmente no GerenciaPedidoPizza.
+     */
+    public void carregarDadosDoPedidoAtual() {
+        Pedido p = gerencia.getPedido();
+
+        // 1. Carrega o cliente
+        if (p.getCliente() != null) {
+            exibirClienteEncontrado(p.getCliente());
+            // Preenche o campo de busca com o telefone para facilitar
+            txtBuscaCliente.setText(p.getCliente().getTelefone());
+        } else {
+            exibirClienteEncontrado(null);
+            txtBuscaCliente.setText("");
+        }
+
+        // 2. Recarrega a tabela de pizzas
+        modeloTabela.setRowCount(0);
+
+        if (p.getListaPizza() != null) {
+            for (Pizza pizza : p.getListaPizza()) {
+
+                // Formato (Circulo, Quadrado, etc) pelo nome da classe
+                String formato = pizza.getClass().getSimpleName();
+                String dimensao = String.valueOf(pizza.getDimensao());
+
+                String s1 = pizza.getsabor1();
+                String s2 = "";
+                if(pizza.getSabores().size() > 1) { s2 = pizza.getsabor2(); }
+
+                modeloTabela.addRow(new Object[]{
+                        formato,
+                        dimensao,
+                        s1,
+                        s2,
+                        String.format("R$ %.2f", pizza.calculaPrecoInteiro())
+                });
+            }
+        }
+    }
     private void atualizarEstadoFormulario(boolean habilitado) {
         cbFormato.setEnabled(habilitado);
         txtTamanho.setEnabled(habilitado);
@@ -379,6 +418,7 @@ public class TelaPedido extends JPanel {
         btnAdicionarPizza.setEnabled(habilitado);
         btnConfirmarPedido.setEnabled(habilitado);
     }
+
 
     // ── Getters para o Controller ─────────────────────────────────────────────
     public JTextField           getTxtBuscaCliente()     { return txtBuscaCliente; }

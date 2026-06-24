@@ -70,12 +70,17 @@ public class JanelaPrincipal extends JFrame {
         TelaPedido telaPedidos = new TelaPedido(daoSabores,daoPedidoPizza);
 
         PedidoController pedidoController = new PedidoController(telaPedidos, daoCliente);
-
+        TelaHistoricoPedidos telaHistorico = new TelaHistoricoPedidos(daoPedidoPizza, () -> {
+            // Isso aqui roda quando o usuário clica em "Alterar Pedido"
+            telaPedidos.carregarDadosDoPedidoAtual();
+            alternarTela("PEDIDOS", "Painel de Pedidos e Entregas");
+        });
 
 
         painelCards.add(telaClientes, "CLIENTES");
         painelCards.add(telaPizzas, "PIZZAS");
         painelCards.add(telaPedidos, "PEDIDOS");
+        painelCards.add(telaHistorico, "HISTORICO");
 
         painelDireito.add(painelCards, BorderLayout.CENTER);
 
@@ -99,16 +104,20 @@ public class JanelaPrincipal extends JFrame {
         JButton btnClientes = criarBotaoMenu("Clientes", null);
         JButton btnPizzas = criarBotaoMenu("Pizzas", null);
         JButton btnPedidos = criarBotaoMenu("Pedidos", null);
+        JButton btnPedidosHistorico = criarBotaoMenu("Historico", null);
 
         btnClientes.addActionListener((ActionEvent e) -> alternarTela("CLIENTES", "Clientes do Sistema"));
         btnPizzas.addActionListener((ActionEvent e) -> alternarTela("PIZZAS", "Cadastro de Sabores e Preços"));
         btnPedidos.addActionListener((ActionEvent e) -> alternarTela("PEDIDOS", "Painel de Pedidos e Entregas"));
+        btnPedidosHistorico.addActionListener((ActionEvent e) -> alternarTela("HISTORICO", "Painel de Historico de Pedidos e Entregas"));
 
         menu.add(btnClientes);
         menu.add(Box.createRigidArea(new Dimension(0, 10)));
         menu.add(btnPizzas);
         menu.add(Box.createRigidArea(new Dimension(0, 10)));
         menu.add(btnPedidos);
+        menu.add(Box.createRigidArea(new Dimension(0, 10)));
+        menu.add(btnPedidosHistorico);
 
         return menu;
     }

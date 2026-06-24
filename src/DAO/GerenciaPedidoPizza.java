@@ -83,4 +83,16 @@ public class GerenciaPedidoPizza {
             this.pedido = new Pedido(null);
         }
     }
+    /**
+     * Pega um pedido do histórico, define como o pedido atual para edição
+     * e o remove do histórico para não gerar duplicidade ao confirmar novamente.
+     */
+    public void carregarPedidoParaEdicao(Pedido pedidoAntigo) {
+        this.pedido = pedidoAntigo;
+        this.cliente = pedidoAntigo.getCliente();
+        this.historicoPedidos.remove(pedidoAntigo);
+    }
+
+
 }
+

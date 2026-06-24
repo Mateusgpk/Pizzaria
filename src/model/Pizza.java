@@ -10,8 +10,20 @@ public abstract class Pizza implements Forma{
     private List<Sabores> sabores = new ArrayList<>();
     private Double cms;
 
+    public List<Sabores> getSabores() {
+        return sabores;
+    }
+
     public Double getCms() {
         return cms;
+    }
+
+    public String getsabor1(){
+        return this.sabores.get(0).getNome();
+    }
+
+    public String getsabor2(){
+        return this.sabores.get(1).getNome();
     }
 
     public void setCms(Double cms) {
