@@ -44,14 +44,14 @@ public class GerenciaPedidoPizza {
 
     // ── LÓGICA DE NEGÓCIO ─────────────────────────────────────────
 
-    public void adicionarPizza(Pizza pizza){
+    public void adicionarPizza(Pizza pizza) {
         pedido.getListaPizza().add(pizza);
         calcularValorPedido();
     }
 
-    public void calcularValorPedido(){
+    public void calcularValorPedido() {
         pedido.setValorTotal(0);
-        for(Pizza pizza : pedido.getListaPizza()){
+        for (Pizza pizza : pedido.getListaPizza()) {
             pedido.setValorTotal(pedido.getValorTotal() + pizza.calculaPrecoInteiro());
         }
     }
@@ -83,6 +83,7 @@ public class GerenciaPedidoPizza {
             this.pedido = new Pedido(null);
         }
     }
+
     /**
      * Pega um pedido do histórico, define como o pedido atual para edição
      * e o remove do histórico para não gerar duplicidade ao confirmar novamente.
@@ -91,6 +92,16 @@ public class GerenciaPedidoPizza {
         this.pedido = pedidoAntigo;
         this.cliente = pedidoAntigo.getCliente();
         this.historicoPedidos.remove(pedidoAntigo);
+    }
+
+    /**
+     * Remove uma pizza do pedido atual baseada no seu índice (posição na lista)
+     */
+    public void removerPizzaPorIndice(int index) {
+        if (this.pedido != null && index >= 0 && index < this.pedido.getListaPizza().size()) {
+            this.pedido.getListaPizza().remove(index);
+            calcularValorPedido();
+        }
     }
 
 

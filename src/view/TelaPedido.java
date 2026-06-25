@@ -22,20 +22,20 @@ public class TelaPedido extends JPanel {
 
     // ── Painel de busca de cliente ────────────────────────────────────────────
     private JTextField txtBuscaCliente;
-    private JButton    btnBuscarCliente;
-    private JLabel     lblClienteSelecionado;
+    private JButton btnBuscarCliente;
+    private JLabel lblClienteSelecionado;
 
     // ── Formulário da pizza ───────────────────────────────────────────────────
     private JComboBox<TipoSabor> cbTipo1;
-    private JComboBox<Sabores>   cbSabor1;
-    private JCheckBox            chkSabor2;
+    private JComboBox<Sabores> cbSabor1;
+    private JCheckBox chkSabor2;
     private JComboBox<TipoSabor> cbTipo2;
-    private JComboBox<Sabores>   cbSabor2;
-    private JComboBox<String>    cbFormato;
-    private JTextField           txtTamanho;
+    private JComboBox<Sabores> cbSabor2;
+    private JComboBox<String> cbFormato;
+    private JTextField txtTamanho;
 
     // ── Tabela de pizzas adicionadas ──────────────────────────────────────────
-    private JTable            tabelaPizzas;
+    private JTable tabelaPizzas;
     private DefaultTableModel modeloTabela;
 
     // ── Botões ────────────────────────────────────────────────────────────────
@@ -46,18 +46,18 @@ public class TelaPedido extends JPanel {
 
     // ── Dependências ──────────────────────────────────────────────────────────
     private final GerenciaPedidoPizza gerencia;
-    private final GerenciadorSabores  gerenciadorSabores;
+    private final GerenciadorSabores gerenciadorSabores;
 
     public TelaPedido(GerenciadorSabores gerenciadorSabores, GerenciaPedidoPizza gerenciaPedidoPizza) {
         this.gerenciadorSabores = gerenciadorSabores;
-        this.gerencia=gerenciaPedidoPizza;
+        this.gerencia = gerenciaPedidoPizza;
 
         setLayout(new BorderLayout(20, 20));
         setBorder(new EmptyBorder(25, 25, 25, 25));
 
-        add(criarPainelCliente(),  BorderLayout.NORTH);
-        add(criarPainelCentro(),   BorderLayout.CENTER);
-        add(criarPainelBotoes(),   BorderLayout.SOUTH);
+        add(criarPainelCliente(), BorderLayout.NORTH);
+        add(criarPainelCentro(), BorderLayout.CENTER);
+        add(criarPainelBotoes(), BorderLayout.SOUTH);
 
         recarregarSabores(); // popula combos com dados do GerenciadorSabores
         atualizarEstadoSabor2();
@@ -71,20 +71,27 @@ public class TelaPedido extends JPanel {
 
         GridBagConstraints g = new GridBagConstraints();
         g.insets = new Insets(8, 8, 8, 8);
-        g.fill   = GridBagConstraints.HORIZONTAL;
+        g.fill = GridBagConstraints.HORIZONTAL;
 
-        g.gridx = 0; g.gridy = 0; g.weightx = 0;
+        g.gridx = 0;
+        g.gridy = 0;
+        g.weightx = 0;
         painel.add(new JLabel("Buscar por nome ou telefone:"), g);
 
-        g.gridx = 1; g.weightx = 1.0;
+        g.gridx = 1;
+        g.weightx = 1.0;
         txtBuscaCliente = new JTextField();
         painel.add(txtBuscaCliente, g);
 
-        g.gridx = 2; g.weightx = 0;
+        g.gridx = 2;
+        g.weightx = 0;
         btnBuscarCliente = new JButton("Buscar");
         painel.add(btnBuscarCliente, g);
 
-        g.gridx = 0; g.gridy = 1; g.gridwidth = 3; g.weightx = 1.0;
+        g.gridx = 0;
+        g.gridy = 1;
+        g.gridwidth = 3;
+        g.weightx = 1.0;
         lblClienteSelecionado = new JLabel("Nenhum cliente selecionado.");
         lblClienteSelecionado.setForeground(Color.GRAY);
         lblClienteSelecionado.setFont(lblClienteSelecionado.getFont().deriveFont(Font.ITALIC));
@@ -97,7 +104,7 @@ public class TelaPedido extends JPanel {
     private JPanel criarPainelCentro() {
         JPanel painel = new JPanel(new BorderLayout(0, 16));
         painel.add(criarPainelFormulario(), BorderLayout.NORTH);
-        painel.add(criarPainelTabela(),     BorderLayout.CENTER);
+        painel.add(criarPainelTabela(), BorderLayout.CENTER);
         return painel;
     }
 
@@ -108,43 +115,61 @@ public class TelaPedido extends JPanel {
 
         GridBagConstraints g = new GridBagConstraints();
         g.insets = new Insets(8, 8, 8, 8);
-        g.fill   = GridBagConstraints.HORIZONTAL;
+        g.fill = GridBagConstraints.HORIZONTAL;
 
         // Linha 0: Formato + Dimensão
-        g.gridy = 0; g.weightx = 0;
-        g.gridx = 0; painel.add(new JLabel("Formato:"), g);
-        g.gridx = 1; g.weightx = 0.5;
+        g.gridy = 0;
+        g.weightx = 0;
+        g.gridx = 0;
+        painel.add(new JLabel("Formato:"), g);
+        g.gridx = 1;
+        g.weightx = 0.5;
         cbFormato = new JComboBox<>(new String[]{"Círculo", "Quadrado", "Triângulo"});
         painel.add(cbFormato, g);
 
-        g.gridx = 2; g.weightx = 0;
+        g.gridx = 2;
+        g.weightx = 0;
         painel.add(new JLabel("Dimensão (cm):"), g);
-        g.gridx = 3; g.weightx = 0.5;
+        g.gridx = 3;
+        g.weightx = 0.5;
         txtTamanho = new JTextField();
         painel.add(txtTamanho, g);
 
         // Linha 1: Sabor 1
-        g.gridy = 1; g.weightx = 0;
-        g.gridx = 0; painel.add(new JLabel("Sabor 1 - Categoria:"), g);
-        g.gridx = 1; g.weightx = 0.5;
-        cbTipo1  = new JComboBox<>();
+        g.gridy = 1;
+        g.weightx = 0;
+        g.gridx = 0;
+        painel.add(new JLabel("Sabor 1 - Categoria:"), g);
+        g.gridx = 1;
+        g.weightx = 0.5;
+        cbTipo1 = new JComboBox<>();
         cbSabor1 = new JComboBox<>();
         painel.add(cbTipo1, g);
-        g.gridx = 2; g.weightx = 0; painel.add(new JLabel("Sabor 1:"), g);
-        g.gridx = 3; g.weightx = 0.5; painel.add(cbSabor1, g);
+        g.gridx = 2;
+        g.weightx = 0;
+        painel.add(new JLabel("Sabor 1:"), g);
+        g.gridx = 3;
+        g.weightx = 0.5;
+        painel.add(cbSabor1, g);
 
         // Linha 2: Sabor 2 (opcional)
-        g.gridy = 2; g.weightx = 0;
+        g.gridy = 2;
+        g.weightx = 0;
         g.gridx = 0;
         chkSabor2 = new JCheckBox("Sabor 2 - Categoria:");
         chkSabor2.addActionListener(e -> atualizarEstadoSabor2());
         painel.add(chkSabor2, g);
-        g.gridx = 1; g.weightx = 0.5;
-        cbTipo2  = new JComboBox<>();
+        g.gridx = 1;
+        g.weightx = 0.5;
+        cbTipo2 = new JComboBox<>();
         cbSabor2 = new JComboBox<>();
         painel.add(cbTipo2, g);
-        g.gridx = 2; g.weightx = 0; painel.add(new JLabel("Sabor 2:"), g);
-        g.gridx = 3; g.weightx = 0.5; painel.add(cbSabor2, g);
+        g.gridx = 2;
+        g.weightx = 0;
+        painel.add(new JLabel("Sabor 2:"), g);
+        g.gridx = 3;
+        g.weightx = 0.5;
+        painel.add(cbSabor2, g);
 
         return painel;
     }
@@ -156,7 +181,10 @@ public class TelaPedido extends JPanel {
 
         String[] colunas = {"Formato", "Dimensão (cm)", "Sabor 1", "Sabor 2", "Valor (R$)"};
         modeloTabela = new DefaultTableModel(colunas, 0) {
-            @Override public boolean isCellEditable(int row, int col) { return false; }
+            @Override
+            public boolean isCellEditable(int row, int col) {
+                return false;
+            }
         };
 
         tabelaPizzas = new JTable(modeloTabela);
@@ -171,9 +199,9 @@ public class TelaPedido extends JPanel {
     private JPanel criarPainelBotoes() {
         JPanel painel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 12, 0));
 
-        btnLimpar          = new JButton("Limpar Campos");
-        btnRemoverPizza    = new JButton("Remover Pizza");
-        btnAdicionarPizza  = new JButton("Adicionar Pizza");
+        btnLimpar = new JButton("Limpar Campos");
+        btnRemoverPizza = new JButton("Remover Pizza");
+        btnAdicionarPizza = new JButton("Adicionar Pizza");
         btnConfirmarPedido = new JButton("Confirmar Pedido");
 
         btnLimpar.addActionListener(e -> limpar());
@@ -205,7 +233,8 @@ public class TelaPedido extends JPanel {
         for (TipoSabor t : gerenciadorSabores.listarTipos()) cbTipo.addItem(t);
 
         cbTipo.setRenderer(new DefaultListCellRenderer() {
-            @Override public Component getListCellRendererComponent(
+            @Override
+            public Component getListCellRendererComponent(
                     JList<?> list, Object val, int idx, boolean sel, boolean foc) {
                 super.getListCellRendererComponent(list, val, idx, sel, foc);
                 if (val instanceof TipoSabor t)
@@ -226,7 +255,8 @@ public class TelaPedido extends JPanel {
             if (s.getTipoSabor() == sel) cbSabor.addItem(s);
         }
         cbSabor.setRenderer(new DefaultListCellRenderer() {
-            @Override public Component getListCellRendererComponent(
+            @Override
+            public Component getListCellRendererComponent(
                     JList<?> list, Object val, int idx, boolean sel2, boolean foc) {
                 super.getListCellRendererComponent(list, val, idx, sel2, foc);
                 if (val instanceof Sabores s) setText(s.getNome());
@@ -313,12 +343,15 @@ public class TelaPedido extends JPanel {
 
     private void removerPizza() {
         int linha = tabelaPizzas.getSelectedRow();
+
         if (linha < 0) {
             JOptionPane.showMessageDialog(this,
                     "Selecione uma pizza na tabela para remover.",
                     "Atenção", JOptionPane.WARNING_MESSAGE);
             return;
         }
+
+        gerencia.removerPizzaPorIndice(linha);
         modeloTabela.removeRow(linha);
     }
 
@@ -395,7 +428,9 @@ public class TelaPedido extends JPanel {
 
                 String s1 = pizza.getsabor1();
                 String s2 = "";
-                if(pizza.getSabores().size() > 1) { s2 = pizza.getsabor2(); }
+                if (pizza.getSabores().size() > 1) {
+                    s2 = pizza.getsabor2();
+                }
 
                 modeloTabela.addRow(new Object[]{
                         formato,
@@ -407,6 +442,7 @@ public class TelaPedido extends JPanel {
             }
         }
     }
+
     private void atualizarEstadoFormulario(boolean habilitado) {
         cbFormato.setEnabled(habilitado);
         txtTamanho.setEnabled(habilitado);
@@ -421,20 +457,67 @@ public class TelaPedido extends JPanel {
 
 
     // ── Getters para o Controller ─────────────────────────────────────────────
-    public JTextField           getTxtBuscaCliente()     { return txtBuscaCliente; }
-    public JButton              getBtnBuscarCliente()    { return btnBuscarCliente; }
-    public JComboBox<TipoSabor> getCbTipo1()             { return cbTipo1; }
-    public JComboBox<Sabores>   getCbSabor1()            { return cbSabor1; }
-    public JCheckBox            getChkSabor2()           { return chkSabor2; }
-    public JComboBox<TipoSabor> getCbTipo2()             { return cbTipo2; }
-    public JComboBox<Sabores>   getCbSabor2()            { return cbSabor2; }
-    public JComboBox<String>    getCbFormato()           { return cbFormato; }
-    public JTextField           getTxtTamanho()          { return txtTamanho; }
-    public JTable               getTabelaPizzas()        { return tabelaPizzas; }
-    public DefaultTableModel    getModeloTabela()        { return modeloTabela; }
-    public JButton              getBtnAdicionarPizza()   { return btnAdicionarPizza; }
-    public JButton              getBtnRemoverPizza()     { return btnRemoverPizza; }
-    public JButton              getBtnConfirmarPedido()  { return btnConfirmarPedido; }
-    public JButton              getBtnLimpar()           { return btnLimpar; }
-    public GerenciaPedidoPizza  getGerencia()            { return gerencia; }
+    public JTextField getTxtBuscaCliente() {
+        return txtBuscaCliente;
+    }
+
+    public JButton getBtnBuscarCliente() {
+        return btnBuscarCliente;
+    }
+
+    public JComboBox<TipoSabor> getCbTipo1() {
+        return cbTipo1;
+    }
+
+    public JComboBox<Sabores> getCbSabor1() {
+        return cbSabor1;
+    }
+
+    public JCheckBox getChkSabor2() {
+        return chkSabor2;
+    }
+
+    public JComboBox<TipoSabor> getCbTipo2() {
+        return cbTipo2;
+    }
+
+    public JComboBox<Sabores> getCbSabor2() {
+        return cbSabor2;
+    }
+
+    public JComboBox<String> getCbFormato() {
+        return cbFormato;
+    }
+
+    public JTextField getTxtTamanho() {
+        return txtTamanho;
+    }
+
+    public JTable getTabelaPizzas() {
+        return tabelaPizzas;
+    }
+
+    public DefaultTableModel getModeloTabela() {
+        return modeloTabela;
+    }
+
+    public JButton getBtnAdicionarPizza() {
+        return btnAdicionarPizza;
+    }
+
+    public JButton getBtnRemoverPizza() {
+        return btnRemoverPizza;
+    }
+
+    public JButton getBtnConfirmarPedido() {
+        return btnConfirmarPedido;
+    }
+
+    public JButton getBtnLimpar() {
+        return btnLimpar;
+    }
+
+    public GerenciaPedidoPizza getGerencia() {
+        return gerencia;
+    }
 }
