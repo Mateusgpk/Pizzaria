@@ -104,6 +104,23 @@ public class GerenciaPedidoPizza {
         }
     }
 
+    /**
+     * Realiza o calculo para para descobrir a dimensão (lado ou raio)
+     * com base em uma área informada em cm².
+     */
+    public double calcularDimensaoPorArea(int formato, double area) {
+        if (area < 100.0 || area > 1600.0) {
+            throw new IllegalArgumentException("A área informada deve estar entre 100 e 1600 cm².");
+        }
+
+        return switch (formato) {
+            case 1 -> Math.sqrt(area / Math.PI); // Círculo
+            case 2 -> Math.sqrt(area); // Quadrado
+            case 3 -> Math.sqrt((4.0 * area) / Math.sqrt(3)); // Triângulo
+            default -> throw new IllegalArgumentException("Formato inválido.");
+        };
+    }
+
 
 }
 
