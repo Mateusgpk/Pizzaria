@@ -71,7 +71,6 @@ public class JanelaPrincipal extends JFrame {
 
         PedidoController pedidoController = new PedidoController(telaPedidos, daoCliente);
         TelaHistoricoPedidos telaHistorico = new TelaHistoricoPedidos(daoPedidoPizza, () -> {
-            // Isso aqui roda quando o usuário clica em "Alterar Pedido"
             telaPedidos.carregarDadosDoPedidoAtual();
             alternarTela("PEDIDOS", "Painel de Pedidos e Entregas");
         });

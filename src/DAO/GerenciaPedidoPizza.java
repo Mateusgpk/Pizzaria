@@ -21,7 +21,6 @@ public class GerenciaPedidoPizza {
 
     public void setCliente(Cliente cliente) {
         this.cliente = cliente;
-        // Importante: atualiza o cliente dentro do pedido atual também
         if (this.pedido != null) {
             this.pedido.setCliente(cliente);
         }
@@ -35,14 +34,11 @@ public class GerenciaPedidoPizza {
         this.pedido = pedido;
     }
 
-    /**
-     * Retorna a lista de todos os pedidos já finalizados no sistema.
-     */
+
     public List<Pedido> getHistoricoPedidos() {
         return new ArrayList<>(this.historicoPedidos);
     }
 
-    // ── LÓGICA DE NEGÓCIO ─────────────────────────────────────────
 
     public void adicionarPizza(Pizza pizza) {
         pedido.getListaPizza().add(pizza);
@@ -56,7 +52,7 @@ public class GerenciaPedidoPizza {
         }
     }
 
-    public void fazerAdicionarPizza(Double lado, int formato, List<Sabores> sabores) {
+    public Pizza fazerAdicionarPizza(Double lado, int formato, List<Sabores> sabores) {
         try {
             Pizza nova = switch (formato) {
                 case 1 -> new Circulo(lado, sabores);
@@ -65,9 +61,15 @@ public class GerenciaPedidoPizza {
                 default -> null;
             };
             adicionarPizza(nova);
+            return nova;
         } catch (Exception e) {
             throw e;
         }
+
+    }
+
+    public void removePedido(Pedido pedido){
+        this.historicoPedidos.remove(pedido);
     }
 
     /**
@@ -102,6 +104,11 @@ public class GerenciaPedidoPizza {
             this.pedido.getListaPizza().remove(index);
             calcularValorPedido();
         }
+    }
+
+    public void limparListaPizza(){
+        this.pedido.getListaPizza().clear();
+        calcularValorPedido();
     }
 
     /**

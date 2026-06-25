@@ -42,6 +42,7 @@ public class TelaPedido extends JPanel {
     private JButton btnRemoverPizza;
     private JButton btnConfirmarPedido;
     private JButton btnLimpar;
+    private JLabel  lblValorTotal;
 
     // ── Dependências ──────────────────────────────────────────────────────────
     private final GerenciaPedidoPizza gerencia;
@@ -179,11 +180,20 @@ public class TelaPedido extends JPanel {
     }
 
     private JPanel criarPainelBotoes() {
+
+
+        lblValorTotal = new JLabel("Valor total: R$ 0,00");
+        lblValorTotal.setFont(new Font("Arial", Font.BOLD, 14)); // Dá um destaque no texto
+        lblValorTotal.setForeground(new Color(0, 102, 0));
         JPanel painel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 12, 0));
 
         btnLimpar = new JButton("Limpar Campos");
         btnRemoverPizza = new JButton("Remover Pizza");
         btnAdicionarPizza = new JButton("Adicionar Pizza");
+        painel.add(lblValorTotal);
+        btnLimpar          = new JButton("Limpar Campos");
+        btnRemoverPizza    = new JButton("Remover Pizza");
+        btnAdicionarPizza  = new JButton("Adicionar Pizza");
         btnConfirmarPedido = new JButton("Confirmar Pedido");
 
         btnLimpar.addActionListener(e -> limpar());
@@ -198,7 +208,16 @@ public class TelaPedido extends JPanel {
 
         return painel;
     }
+    private void atualizarValorTotal() {
+        double total = gerencia.getPedido().getValorTotal();
+        lblValorTotal.setText(String.format("Valor total: R$ %.2f", total));
+    }
+    // ── Lógica ────────────────────────────────────────────────────────────────
 
+    /**
+     * Recarrega os combos de tipo e sabor com os dados atuais do GerenciadorSabores.
+     * Deve ser chamado sempre que a TelaPizza salvar/alterar sabores.
+     */
     public void recarregarSabores() {
         popularTipos(cbTipo1, cbSabor1);
         popularTipos(cbTipo2, cbSabor2);
@@ -323,6 +342,7 @@ public class TelaPedido extends JPanel {
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Erro de Validação", JOptionPane.ERROR_MESSAGE);
         }
+        atualizarValorTotal();
     }
 
     private void removerPizza() {
@@ -333,6 +353,8 @@ public class TelaPedido extends JPanel {
         }
         gerencia.removerPizzaPorIndice(linha);
         modeloTabela.removeRow(linha);
+        atualizarValorTotal();
+
     }
 
     private void confirmarPedido() {
@@ -348,6 +370,7 @@ public class TelaPedido extends JPanel {
         gerencia.confirmarESalvarPedido();
         JOptionPane.showMessageDialog(this, "Pedido confirmado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
         limpar();
+        atualizarValorTotal();
     }
 
     private void limpar() {
@@ -355,6 +378,7 @@ public class TelaPedido extends JPanel {
         lblClienteSelecionado.setText("Nenhum cliente selecionado.");
         lblClienteSelecionado.setForeground(Color.GRAY);
         lblClienteSelecionado.setFont(lblClienteSelecionado.getFont().deriveFont(Font.ITALIC));
+        gerencia.limparListaPizza();
         gerencia.setCliente(null);
         txtTamanho.setText("");
         cbModoEntrada.setSelectedIndex(0);
@@ -364,6 +388,7 @@ public class TelaPedido extends JPanel {
         atualizarEstadoSabor2();
         atualizarEstadoFormulario(false);
         modeloTabela.setRowCount(0);
+        atualizarValorTotal();
     }
 
     private void atualizarEstadoSabor2() {
