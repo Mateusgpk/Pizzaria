@@ -7,6 +7,8 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.List;
 
 public class TelaHistoricoPedidos extends JPanel {
@@ -18,6 +20,8 @@ public class TelaHistoricoPedidos extends JPanel {
     private JButton btnAtualizar;
     private JButton btnEditarPedido;
 
+
+    private List<Pedido> historicoAtual;
     private final Runnable acaoTrocarParaPedidos;
 
     public TelaHistoricoPedidos(GerenciaPedidoPizza gerencia, Runnable acaoTrocarParaPedidos) {
@@ -29,6 +33,17 @@ public class TelaHistoricoPedidos extends JPanel {
 
         add(criarPainelTabela(), BorderLayout.CENTER);
         add(criarPainelBotoes(), BorderLayout.SOUTH);
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentShown(ComponentEvent e) {
+                try {
+                    carregarDados();
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+
     }
 
     private JPanel criarPainelTabela() {
@@ -48,11 +63,18 @@ public class TelaHistoricoPedidos extends JPanel {
             @Override
             public void setValueAt(Object aValue, int row, int column) {
                 super.setValueAt(aValue, row, column);
-                // 3. Quando o usuário trocar o combo na tabela, salva no objeto Pedido real
-                if (column == 5) {
-                    List<Pedido> historico = gerencia.getHistoricoPedidos();
-                    Pedido p = historico.get(row);
-                    p.setStatus(aValue.toString());
+                if (column == 5 && historicoAtual != null && row < historicoAtual.size()) {
+                    Pedido p = historicoAtual.get(row);
+                    try {
+                        gerencia.atualizarStatusPedido(p, aValue.toString());
+                    } catch (Exception e) {
+                        JOptionPane.showMessageDialog(
+                                TelaHistoricoPedidos.this,
+                                "Erro ao atualizar status: " + e.getMessage(),
+                                "Erro",
+                                JOptionPane.ERROR_MESSAGE
+                        );
+                    }
                 }
             }
         };
@@ -73,13 +95,31 @@ public class TelaHistoricoPedidos extends JPanel {
         JPanel painel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 12, 0));
 
         btnDeletar = new JButton("Deletar Pedido");
-        btnDeletar.addActionListener(e -> deletarPedido());
+        btnDeletar.addActionListener(e -> {
+            try {
+                deletarPedido();
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        });
 
         btnAtualizar = new JButton("Atualizar Lista");
-        btnAtualizar.addActionListener(e -> carregarDados());
+        btnAtualizar.addActionListener(e -> {
+            try {
+                carregarDados();
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        });
 
         btnEditarPedido = new JButton("Alterar Pedido");
-        btnEditarPedido.addActionListener(e -> acaoEditarPedido());
+        btnEditarPedido.addActionListener(e -> {
+            try {
+                acaoEditarPedido();
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        });
 
         painel.add(btnDeletar);
         painel.add(btnAtualizar);
@@ -87,7 +127,7 @@ public class TelaHistoricoPedidos extends JPanel {
         return painel;
     }
 
-    private void deletarPedido(){
+    private void deletarPedido() throws Exception {
         int linhaSelecionada = tabelaHistorico.getSelectedRow();
         if (linhaSelecionada < 0) {
             JOptionPane.showMessageDialog(this, "Selecione um pedido na tabela para deletar.", "Atenção", JOptionPane.WARNING_MESSAGE);
@@ -100,7 +140,7 @@ public class TelaHistoricoPedidos extends JPanel {
 
     }
 
-    private void acaoEditarPedido() {
+    private void acaoEditarPedido() throws Exception {
         int linhaSelecionada = tabelaHistorico.getSelectedRow();
 
         if (linhaSelecionada < 0) {
@@ -124,21 +164,20 @@ public class TelaHistoricoPedidos extends JPanel {
         acaoTrocarParaPedidos.run();
     }
 
-    public void carregarDados() {
+    public void carregarDados() throws Exception {
         if (tabelaHistorico.isEditing()) {
             tabelaHistorico.getCellEditor().stopCellEditing();
         }
 
         modeloTabela.setRowCount(0);
-        List<Pedido> historico = gerencia.getHistoricoPedidos();
+        this.historicoAtual = gerencia.getHistoricoPedidos();
 
-        if (historico != null) {
-            for (Pedido p : historico) {
+        if (this.historicoAtual != null) {
+            for (Pedido p : this.historicoAtual) {
                 String id = String.valueOf(p.getId());
                 String nome = (p.getCliente() != null) ? p.getCliente().getNome() : "Desconhecido";
                 String tel = (p.getCliente() != null) ? p.getCliente().getTelefone() : "-";
 
-                // 5. Adiciona o status atual do pedido na montagem da linha
                 modeloTabela.addRow(new Object[]{
                         id,
                         nome,

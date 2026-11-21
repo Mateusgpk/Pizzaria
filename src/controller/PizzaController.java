@@ -3,25 +3,27 @@ package controller;
 import DAO.GerenciadorSabores;
 import model.Sabores;
 import model.TipoSabor;
+import view.TelaPedido;
 import view.TelaPizza;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Controlador da tela de Sabores e Preços.
- */
 public class PizzaController {
 
     private final TelaPizza view;
+    private final TelaPedido viewPedido;
     private final GerenciadorSabores gerenciador;
+    private List<Sabores> saboresCarregados = new ArrayList<>();
 
-    public PizzaController(TelaPizza view, GerenciadorSabores gerenciador) {
+    public PizzaController(TelaPizza view, GerenciadorSabores gerenciador,TelaPedido telaPedido) {
         this.view = view;
+        this.viewPedido=telaPedido;
         this.gerenciador = gerenciador;
         inicializarEventos();
-        atualizarTabelaSabores(gerenciador.listarTodos());
+        carregarTabelaSabores();
     }
 
     private void inicializarEventos() {
@@ -40,6 +42,15 @@ public class PizzaController {
         silenciarCamposVazios(view.getTxtNomeSabor());
     }
 
+    private void carregarTabelaSabores() {
+        try {
+            this.saboresCarregados = gerenciador.listarTodos();
+            atualizarTabelaSabores(this.saboresCarregados);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(view, "Erro ao carregar sabores: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     private void acaoSalvarSabor() {
         String nome = view.getTxtNomeSabor().getText().trim();
         TipoSabor tipo = (TipoSabor) view.getCmbTipoSabor().getSelectedItem();
@@ -49,11 +60,13 @@ public class PizzaController {
             return;
         }
         try {
-            gerenciador.adicionarSabor(new Sabores(tipo, nome));
+            gerenciador.adicionarSabor(new Sabores(null, tipo, nome));
             JOptionPane.showMessageDialog(view, "Sabor cadastrado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
             limparCampos();
-            atualizarTabelaSabores(gerenciador.listarTodos());
-        } catch (IllegalArgumentException ex) {
+            viewPedido.recarregarSabores();
+            carregarTabelaSabores();
+
+        } catch (Exception ex) {
             JOptionPane.showMessageDialog(view, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -71,11 +84,15 @@ public class PizzaController {
             return;
         }
         try {
-            gerenciador.atualizarSabor(linha, nome, tipo);
+            Sabores selecionado = saboresCarregados.get(linha);
+            selecionado.setNome(nome);
+            selecionado.setTipoSabor(tipo);
+
+            gerenciador.atualizarSabor(selecionado);
             JOptionPane.showMessageDialog(view, "Sabor atualizado com sucesso!");
             limparCampos();
-            atualizarTabelaSabores(gerenciador.listarTodos());
-        } catch (IllegalArgumentException ex) {
+            carregarTabelaSabores();
+        } catch (Exception ex) {
             JOptionPane.showMessageDialog(view, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -89,56 +106,67 @@ public class PizzaController {
         int confirmacao = JOptionPane.showConfirmDialog(view,
                 "Deseja excluir este sabor?", "Confirmar Exclusão", JOptionPane.YES_NO_OPTION);
         if (confirmacao == JOptionPane.YES_OPTION) {
-            gerenciador.removerSabor(linha);
-            limparCampos();
-            atualizarTabelaSabores(gerenciador.listarTodos());
+            try {
+                Sabores selecionado = saboresCarregados.get(linha);
+                gerenciador.removerSabor(selecionado);
+                limparCampos();
+                carregarTabelaSabores();
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(view, "Erro ao excluir sabor: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 
     private void acaoSalvarPrecos() {
-        List<TipoSabor> tipos = gerenciador.listarTipos();
-        DefaultTableModel modelo = view.getModeloTabelaPrecos();
         try {
+            List<TipoSabor> tipos = gerenciador.listarTipos();
+            DefaultTableModel modelo = view.getModeloTabelaPrecos();
+
             for (int i = 0; i < tipos.size(); i++) {
                 String valor = modelo.getValueAt(i, 1).toString().replace(",", ".");
                 double preco = Double.parseDouble(valor);
-                if (preco <= 0) throw new IllegalArgumentException("Preço deve ser positivo.");
                 tipos.get(i).setPreco(preco);
+                gerenciador.atualizarPrecoTipo(tipos.get(i));
             }
             JOptionPane.showMessageDialog(view, "Preços atualizados com sucesso!");
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(view, "Valor inválido. Use apenas números (ex: 0.25).", "Erro", JOptionPane.ERROR_MESSAGE);
-        } catch (IllegalArgumentException ex) {
+        } catch (Exception ex) {
             JOptionPane.showMessageDialog(view, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void preencherFormularioComLinhaSelecionada() {
         int linha = view.getTabelaSabores().getSelectedRow();
-        Sabores s = gerenciador.listarTodos().get(linha);
+        Sabores s = saboresCarregados.get(linha);
         view.getTxtNomeSabor().setText(s.getNome());
         view.getCmbTipoSabor().setSelectedItem(s.getTipoSabor());
     }
 
     private void limparCampos() {
         view.getTxtNomeSabor().setText("");
-        view.getCmbTipoSabor().setSelectedIndex(0);
+        if (view.getCmbTipoSabor().getItemCount() > 0) {
+            view.getCmbTipoSabor().setSelectedIndex(0);
+        }
         view.getTabelaSabores().clearSelection();
     }
 
     private void atualizarTabelaSabores(List<Sabores> lista) {
         DefaultTableModel modelo = view.getModeloTabelaSabores();
         modelo.setRowCount(0);
-        for (Sabores s : lista)
-            modelo.addRow(new Object[]{s.getNome(), s.getTipoSabor().getNome()});
+        for (Sabores s : lista) {
+            modelo.addRow(new Object[]{ s.getNome(), s.getTipoSabor().getNome() });
+        }
     }
 
     private void silenciarCamposVazios(JTextField... campos) {
         for (JTextField campo : campos) {
             campo.addKeyListener(new java.awt.event.KeyAdapter() {
-                @Override public void keyPressed(java.awt.event.KeyEvent e) {
-                    if (e.getKeyCode() == java.awt.event.KeyEvent.VK_BACK_SPACE && campo.getText().isEmpty())
+                @Override
+                public void keyPressed(java.awt.event.KeyEvent e) {
+                    if (e.getKeyCode() == java.awt.event.KeyEvent.VK_BACK_SPACE && campo.getText().isEmpty()) {
                         e.consume();
+                    }
                 }
             });
         }

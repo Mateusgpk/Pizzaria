@@ -1,12 +1,22 @@
 package model;
 
 public class Sabores {
+    private Long id;
     private TipoSabor tipoSabor;
     private String nome;
 
-    public Sabores(TipoSabor tipoSabor, String nome){
+    public Sabores(Long id, TipoSabor tipoSabor, String nome){
+        this.id=id;
         this.tipoSabor=tipoSabor;
         this.nome=nome;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public TipoSabor getTipoSabor() {

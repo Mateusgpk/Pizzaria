@@ -2,19 +2,34 @@ package model;
 
 import java.util.List;
 
-public class Triangulo extends Pizza {
+public class Triangulo  implements Forma{
 
     public static final double ladoMinimo = 20.0;
     public static final double ladoMaximo = 60.0;
 
     private double lado;
 
-    public Triangulo(double lado, List<Sabores> sabores) {
-        super(sabores);
+    private Long id;
+
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public int getNumbForma() {
+        return 3;
+    }
+
+    @Override
+    public void setId(Long id) {
+
+        this.id = id;
+    }
+    public Triangulo(double lado) {
+
         validarDimensao(lado);
         this.lado = lado;
-        this.setCms(calcularArea());
-        setPreco(calculaPrecoInteiro());
     }
 
     @Override

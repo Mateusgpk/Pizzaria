@@ -1,100 +1,57 @@
 package DAO;
 
 import model.Cliente;
+import model.Dao.ClienteDao;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Classe responsável por gerenciar o cadastro e controle
- * dos clientes do sistema.
- *
- * @version 1.0
- */
 public class GerenciadorCliente {
 
-    // Lista em memória que armazena todos os clientes ativos.
-    private final List<Cliente> clientes;
+    private final ClienteDao clienteDao;
 
-    /**
-     * Construtor da lista de clientes, instanciando vazia.
-     */
     public GerenciadorCliente() {
-        this.clientes = new ArrayList<>();
+        this.clienteDao = ClienteDao.getClientDaoSql();
     }
 
-    /**
-     * Cadastra um novo cliente no sistema.
-     * Impede o cadastro de telefones duplicados.
-     *
-     * @param cliente O objeto Cliente a ser salvo.
-     * @throws IllegalArgumentException Se o telefone já estiver cadastrado.
-     */
-    public void adicionarCliente(Cliente cliente) throws IllegalArgumentException {
-
+    public void adicionarCliente(Cliente cliente) throws Exception {
         if (buscarPorTelefone(cliente.getTelefone()) != null) {
             throw new IllegalArgumentException("Já existe um cliente cadastrado com este telefone.");
         }
-
-        this.clientes.add(cliente);
+        clienteDao.add(cliente);
     }
 
-    /**
-     * Retorna a lista completa de todos os clientes cadastrados.
-     *
-     * @return Uma lista (List) contendo os clientes.
-     */
-    public List<Cliente> listarTodos() {
-
-        return new ArrayList<>(this.clientes);
-
+    public List<Cliente> listarTodos() throws Exception {
+        return clienteDao.getAll();
     }
 
-    /**
-     * Atualiza os dados de um cliente existente com base no seu telefone atual.
-     *
-     * @param telefoneAtual  O telefone do cliente que será editado.
-     * @param clienteEditado Objeto contendo os novos dados.
-     * @throws IllegalArgumentException Se o cliente não for encontrado.
-     */
-    public void atualizarCliente(String telefoneAtual, Cliente clienteEditado) throws IllegalArgumentException {
+    public void atualizarCliente(String telefoneAtual, Cliente clienteEditado) throws Exception {
         Cliente clienteExistente = buscarPorTelefone(telefoneAtual);
 
         if (clienteExistente == null) {
             throw new IllegalArgumentException("Cliente não encontrado para atualização.");
         }
 
-        if (buscarPorTelefone(clienteEditado.getTelefone()) != null && !clienteEditado.getTelefone().equals(clienteExistente.getTelefone())) {
+        Cliente outroComMesmoTelefone = buscarPorTelefone(clienteEditado.getTelefone());
+        if (outroComMesmoTelefone != null && !outroComMesmoTelefone.getId().equals(clienteExistente.getId())) {
             throw new IllegalArgumentException("Já existe um cliente cadastrado com este telefone.");
         }
 
-        clienteExistente.setNome(clienteEditado.getNome());
-        clienteExistente.setSobrenome(clienteEditado.getSobrenome());
-        clienteExistente.setTelefone(clienteEditado.getTelefone());
+        clienteEditado.setId(clienteExistente.getId());
+        clienteDao.update(clienteEditado);
     }
 
-    /**
-     * Remove um cliente do sistema.
-     *
-     * @param telefone O telefone do cliente a ser excluído.
-     * @return true se removido com sucesso, false caso não exista.
-     */
-    public boolean removerCliente(String telefone) {
+    public boolean removerCliente(String telefone) throws Exception {
         Cliente clienteParaRemover = buscarPorTelefone(telefone);
         if (clienteParaRemover != null) {
-            return this.clientes.remove(clienteParaRemover);
+            clienteDao.delete(clienteParaRemover);
+            return true;
         }
         return false;
     }
 
-    /**
-     * Busca um cliente exato pelo seu número de telefone.
-     *
-     * @param telefone O telefone a ser buscado.
-     * @return O objeto Cliente correspondente, ou null se não encontrado.
-     */
-    public Cliente buscarPorTelefone(String telefone) {
-        for (Cliente c : this.clientes) {
+    public Cliente buscarPorTelefone(String telefone) throws Exception {
+        for (Cliente c : listarTodos()) {
             if (c.getTelefone().equals(telefone)) {
                 return c;
             }
@@ -102,21 +59,16 @@ public class GerenciadorCliente {
         return null;
     }
 
-    /**
-     * Filtra a lista de clientes por sobrenome, parte dele ou telefone.
-     *
-     * @param termoBusca O texto usado para a pesquisa.
-     * @return Uma nova lista contendo apenas os clientes que correspondem ao filtro.
-     */
-    public List<Cliente> filtrarClientes(String termoBusca) {
+    public List<Cliente> filtrarClientes(String termoBusca) throws Exception {
+        List<Cliente> todos = listarTodos();
         if (termoBusca == null || termoBusca.trim().isEmpty()) {
-            return listarTodos();
+            return todos;
         }
 
         List<Cliente> resultado = new ArrayList<>();
         String termoLowerCase = termoBusca.toLowerCase().trim();
 
-        for (Cliente c : this.clientes) {
+        for (Cliente c : todos) {
             boolean combinaSobrenome = c.getSobrenome().toLowerCase().contains(termoLowerCase);
             boolean combinaTelefone = c.getTelefone().contains(termoLowerCase);
 
@@ -124,7 +76,6 @@ public class GerenciadorCliente {
                 resultado.add(c);
             }
         }
-
         return resultado;
     }
 }

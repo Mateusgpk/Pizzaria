@@ -3,15 +3,56 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class Pizza implements Forma{
+public class Pizza{
 
-
-    private Double preco;
+    private Long id;
+    private Long idPedido;
     private List<Sabores> sabores = new ArrayList<>();
     private Double cms;
+    private Forma forma;
+
+    public int getTipoForma() {
+        return tipoForma;
+    }
+
+    public void setTipoForma(int tipoForma) {
+        this.tipoForma = tipoForma;
+    }
+
+    public double getDimensao() {
+        return dimensao;
+    }
+
+    public void setDimensao(double dimensao) {
+        this.dimensao = dimensao;
+    }
+
+    private int tipoForma;
+    private double dimensao;
+;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getIdPedido() {
+        return idPedido;
+    }
+
+    public void setIdPedido(Long idPedido) {
+        this.idPedido = idPedido;
+    }
 
     public List<Sabores> getSabores() {
         return sabores;
+    }
+
+    public Forma getForma(){
+        return forma;
     }
 
     public Double getCms() {
@@ -34,12 +75,15 @@ public abstract class Pizza implements Forma{
         return calculaPrecoInteiro();
     }
 
-    public void setPreco(Double preco){
-        this.preco=preco;
-    }
 
-    public Pizza(List<Sabores> sabores){
-        this.sabores=sabores;
+    public Pizza(Long id, Long idPedido, List<Sabores> sabores, Forma forma){
+        this.id = id;
+        this.idPedido = idPedido;
+        this.sabores = sabores;
+        this.forma = forma;
+        this.tipoForma = forma.getNumbForma();
+        this.dimensao = forma.getDimensao();
+        this.cms = forma.calcularArea();
         calculaPreco(sabores);
 
     }

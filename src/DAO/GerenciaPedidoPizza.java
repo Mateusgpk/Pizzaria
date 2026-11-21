@@ -1,20 +1,25 @@
 package DAO;
 
 import model.*;
+import model.Dao.PedidoDao;
+import model.Dao.PizzaDao;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class GerenciaPedidoPizza {
 
-    // ── HISTÓRICO GERAL (Todos os pedidos confirmados) ──────────
-    private final List<Pedido> historicoPedidos = new ArrayList<>();
+    private final PedidoDao pedidoDao;
+    private final PizzaDao pizzaDao;
 
-    // ── PEDIDO ATUAL (A venda que está acontecendo agora na tela) ──
     private Cliente cliente = null;
-    private Pedido pedido = new Pedido(cliente);
+    private Pedido pedido = new Pedido();
 
-    // ── GETTERS & SETTERS ─────────────────────────────────────────
+    public GerenciaPedidoPizza() {
+        this.pedidoDao = new PedidoDao();
+        this.pizzaDao = new PizzaDao();
+    }
+
     public Cliente getCliente() {
         return cliente;
     }
@@ -34,11 +39,16 @@ public class GerenciaPedidoPizza {
         this.pedido = pedido;
     }
 
-
-    public List<Pedido> getHistoricoPedidos() {
-        return new ArrayList<>(this.historicoPedidos);
+    public List<Pedido> getHistoricoPedidos() throws Exception {
+        List<Pedido> pedidos = pedidoDao.getAll();
+        for (Pedido pedido1 : pedidos){
+            System.out.println(pedido1.getCliente());
+            System.out.println(pedido1.getId());
+            pedido1.setListaPizza(new ArrayList<>(pizzaDao.getAllPizzasPedido(pedido1.getId())));
+            calcularValorPedido(pedido1);
+        }
+        return pedidos;
     }
-
 
     public void adicionarPizza(Pizza pizza) {
         pedido.getListaPizza().add(pizza);
@@ -51,54 +61,71 @@ public class GerenciaPedidoPizza {
             pedido.setValorTotal(pedido.getValorTotal() + pizza.calculaPrecoInteiro());
         }
     }
+    public void calcularValorPedido(Pedido pedido) {
+        pedido.setValorTotal(0);
+        for (Pizza pizza : pedido.getListaPizza()) {
+            pedido.setValorTotal(pedido.getValorTotal() + pizza.calculaPrecoInteiro());
+        }
+    }
 
+    public void atualizarStatusPedido(Pedido pedido, String novoStatus) throws Exception {
+        pedido.setStatus(novoStatus);
+        pedidoDao.update(pedido);
+    }
     public Pizza fazerAdicionarPizza(Double lado, int formato, List<Sabores> sabores) {
-        try {
-            Pizza nova = switch (formato) {
-                case 1 -> new Circulo(lado, sabores);
-                case 2 -> new Quadrado(lado, sabores);
-                case 3 -> new Triangulo(lado, sabores);
-                default -> null;
-            };
-            adicionarPizza(nova);
-            return nova;
-        } catch (Exception e) {
-            throw e;
+        Forma forma = switch (formato) {
+            case 1 -> new Circulo(lado);
+            case 2 -> new Quadrado(lado);
+            case 3 -> new Triangulo(lado);
+            default -> throw new IllegalArgumentException("Formato inválido.");
+        };
+
+        Pizza nova = new Pizza(null, null, sabores, forma);
+        nova.setTipoForma(formato);
+        nova.setDimensao(lado);
+
+        adicionarPizza(nova);
+        return nova;
+    }
+
+    public void removePedido(Pedido pedido) throws Exception {
+        pedidoDao.delete(pedido);
+    }
+
+    public void confirmarESalvarPedido() throws Exception {
+        if (this.pedido == null || this.pedido.getListaPizza().isEmpty()) {
+            throw new IllegalArgumentException("Adicione pelo menos uma pizza ao pedido.");
+        }
+        if (this.cliente == null || this.cliente.getId() == null) {
+            throw new IllegalArgumentException("Selecione um cliente válido antes de confirmar o pedido.");
         }
 
-    }
+        this.pedido.setCliente(this.cliente);
 
-    public void removePedido(Pedido pedido){
-        this.historicoPedidos.remove(pedido);
-    }
-
-    /**
-     * Salva o pedido atual no histórico e limpa o "carrinho" para a próxima venda.
-     */
-    public void confirmarESalvarPedido() {
-        if (this.pedido != null && !this.pedido.getListaPizza().isEmpty()) {
-            // 1. Salva na lista global
-            this.historicoPedidos.add(this.pedido);
-
-            // 2. Reseta o estado para o próximo pedido não puxar dados do anterior
-            this.cliente = null;
-            this.pedido = new Pedido(null);
+        // 1. Salva o pedido no banco (o DAO preenche o ID gerado)
+        if (pedido.getId()==null) {
+            pedidoDao.add(this.pedido);
+        }else{
+            pedidoDao.update(this.pedido);
+            pizzaDao.deleteByIdPedido(this.pedido.getId());
         }
+
+        // 2. Salva cada pizza vinculada ao ID do pedido gerado
+        for (Pizza pizza : this.pedido.getListaPizza()) {
+            pizza.setIdPedido(this.pedido.getId());
+            pizzaDao.add(pizza);
+        }
+
+        // 3. Limpa o carrinho para o próximo pedido
+        this.cliente = null;
+        this.pedido = new Pedido();
     }
 
-    /**
-     * Pega um pedido do histórico, define como o pedido atual para edição
-     * e o remove do histórico para não gerar duplicidade ao confirmar novamente.
-     */
     public void carregarPedidoParaEdicao(Pedido pedidoAntigo) {
         this.pedido = pedidoAntigo;
         this.cliente = pedidoAntigo.getCliente();
-        this.historicoPedidos.remove(pedidoAntigo);
     }
 
-    /**
-     * Remove uma pizza do pedido atual baseada no seu índice (posição na lista)
-     */
     public void removerPizzaPorIndice(int index) {
         if (this.pedido != null && index >= 0 && index < this.pedido.getListaPizza().size()) {
             this.pedido.getListaPizza().remove(index);
@@ -106,28 +133,21 @@ public class GerenciaPedidoPizza {
         }
     }
 
-    public void limparListaPizza(){
+    public void limparListaPizza() {
         this.pedido.getListaPizza().clear();
         calcularValorPedido();
     }
 
-    /**
-     * Realiza o calculo para para descobrir a dimensão (lado ou raio)
-     * com base em uma área informada em cm².
-     */
     public double calcularDimensaoPorArea(int formato, double area) {
         if (area < 100.0 || area > 1600.0) {
             throw new IllegalArgumentException("A área informada deve estar entre 100 e 1600 cm².");
         }
 
         return switch (formato) {
-            case 1 -> Math.sqrt(area / Math.PI); // Círculo
-            case 2 -> Math.sqrt(area); // Quadrado
-            case 3 -> Math.sqrt((4.0 * area) / Math.sqrt(3)); // Triângulo
+            case 1 -> Math.sqrt(area / Math.PI);
+            case 2 -> Math.sqrt(area);
+            case 3 -> Math.sqrt((4.0 * area) / Math.sqrt(3));
             default -> throw new IllegalArgumentException("Formato inválido.");
         };
     }
-
-
 }
-

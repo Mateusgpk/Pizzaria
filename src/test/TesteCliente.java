@@ -5,20 +5,20 @@ import model.Cliente;
 
 public class TesteCliente {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
 
         GerenciadorCliente gerenciador = new GerenciadorCliente();
 
         System.out.println("Cadastrando clientes válidos...");
-        gerenciador.adicionarCliente(new Cliente("Nicolas", "Mendes", "41999999999"));
-        gerenciador.adicionarCliente(new Cliente("Rafael", "Tsuji", "41888888888"));
-        gerenciador.adicionarCliente(new Cliente("Mateus", "Gabriel", "41777777777"));
-        gerenciador.adicionarCliente(new Cliente("Carlos", "Vital", "41666666666"));
+        gerenciador.adicionarCliente(new Cliente(1L,"Nicolas", "Mendes", "41999999999"));
+        gerenciador.adicionarCliente(new Cliente(1L,"Rafael", "Tsuji", "41888888888"));
+        gerenciador.adicionarCliente(new Cliente(1L,"Mateus", "Gabriel", "41777777777"));
+        gerenciador.adicionarCliente(new Cliente(1L,"Carlos", "Vital", "41666666666"));
         imprimirLista(gerenciador);
 
         System.out.println("\nTentando cadastrar cliente com telefone duplicado...");
         try {
-            gerenciador.adicionarCliente(new Cliente("João", "Silva", "41999999999"));
+            gerenciador.adicionarCliente(new Cliente(1L,"João", "Silva", "41999999999"));
             System.err.println("FALHA: O sistema permitiu um telefone duplicado!");
         } catch (IllegalArgumentException e) {
             System.out.println("SUCESSO (Erro capturado): " + e.getMessage());
@@ -33,7 +33,7 @@ public class TesteCliente {
         // 4. Teste de Atualização
         System.out.println("\nAtualizando dados do Rafael...");
         try {
-            Cliente dadosAtualizados = new Cliente("Rafael", "Tsuji Uchida", "41888888888");
+            Cliente dadosAtualizados = new Cliente(1L,"Rafael", "Tsuji Uchida", "41888888888");
             gerenciador.atualizarCliente("41888888888", dadosAtualizados);
             System.out.println("SUCESSO: Model.Cliente atualizado.");
         } catch (IllegalArgumentException e) {
@@ -55,7 +55,7 @@ public class TesteCliente {
     /**
      * Método auxiliar para imprimir a lista de clientes no console.
      */
-    private static void imprimirLista(GerenciadorCliente gerenciador) {
+    private static void imprimirLista(GerenciadorCliente gerenciador) throws Exception {
         System.out.println("-------------------------------------------------");
         if (gerenciador.listarTodos().isEmpty()) {
             System.out.println("Lista vazia.");

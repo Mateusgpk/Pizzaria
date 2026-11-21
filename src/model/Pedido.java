@@ -3,16 +3,16 @@ package model;
 import java.util.ArrayList;
 
 public class Pedido {
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    private static int idatual;
-    private int id;
+    private Long id;
     private Cliente cliente;
     private ArrayList<Pizza> listaPizza;
     private double valorTotal;
     private String status = "Aberto";
+
 
     public String getStatus() {
         return status;
@@ -25,10 +25,10 @@ public class Pedido {
     public Pedido() {
         listaPizza = new ArrayList<>();
     }
-    public Pedido(Cliente cliente) {
+
+    public Pedido(Long id, Cliente cliente) {
+        this.id = id;
         this.cliente = cliente;
-        this.id=idatual;
-        idatual++;
         this.listaPizza = new ArrayList<>();
         this.valorTotal = 0.0;
     }
@@ -45,6 +45,7 @@ public class Pedido {
 
     public void setListaPizza(ArrayList<Pizza> listaPizza) {
         this.listaPizza = listaPizza;
+        recalcularValorTotal();
     }
 
     public double getValorTotal() {
@@ -55,5 +56,16 @@ public class Pedido {
         this.valorTotal = valorTotal;
     }
 
-
+    public void recalcularValorTotal() {
+        double total = 0.0;
+        if (this.listaPizza != null) {
+            for (Pizza pizza : this.listaPizza) {
+                total += pizza.calculaPrecoInteiro();
+            }
+        }
+        this.valorTotal = total;
+    }
+    public void setId(Long i) {
+        this.id = i;
+    }
 }

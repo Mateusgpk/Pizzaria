@@ -24,7 +24,7 @@ public class JanelaPrincipal extends JFrame {
     private final JPanel painelCards;
     private JLabel lblTituloHeader;
 
-    public JanelaPrincipal() {
+    public JanelaPrincipal() throws Exception {
         setTitle("Sistema de Pizzaria");
 
         URL caminhoIcone = getClass().getResource("/img/icon.jpg");
@@ -49,13 +49,7 @@ public class JanelaPrincipal extends JFrame {
 
         cardLayout = new CardLayout();
         painelCards = new JPanel(cardLayout);
-
         GerenciadorCliente daoCliente = new GerenciadorCliente();
-
-        daoCliente.adicionarCliente(new Cliente("Nicolas", "Mendes Fernandes", "41998710753"));
-        daoCliente.adicionarCliente(new Cliente("Mateus", "Gabriel Kuduavski", "41996441322"));
-        daoCliente.adicionarCliente(new Cliente("Rafael", "Tsuji Uchida", "41988519427"));
-        daoCliente.adicionarCliente(new Cliente("Carlos", "Eduardo de Moraes Vital", "41997253597"));
 
         TelaCliente telaClientes = new TelaCliente();
         ClienteController clienteController = new ClienteController(telaClientes, daoCliente);
@@ -63,11 +57,13 @@ public class JanelaPrincipal extends JFrame {
 
 
         GerenciadorSabores daoSabores = new GerenciadorSabores();
-        TelaPizza telaPizzas = new TelaPizza(daoSabores.listarTipos());
-        new PizzaController(telaPizzas, daoSabores);
+
 
         GerenciaPedidoPizza daoPedidoPizza = new GerenciaPedidoPizza();
         TelaPedido telaPedidos = new TelaPedido(daoSabores,daoPedidoPizza);
+
+        TelaPizza telaPizzas = new TelaPizza(daoSabores.listarTipos());
+        new PizzaController(telaPizzas, daoSabores,telaPedidos);
 
         PedidoController pedidoController = new PedidoController(telaPedidos, daoCliente);
         TelaHistoricoPedidos telaHistorico = new TelaHistoricoPedidos(daoPedidoPizza, () -> {

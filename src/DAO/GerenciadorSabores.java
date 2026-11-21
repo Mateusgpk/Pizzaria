@@ -1,54 +1,57 @@
 package DAO;
 
+import model.Dao.SaboresDao;
+import model.Dao.TipoSaboresDao;
 import model.Sabores;
 import model.TipoSabor;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class GerenciadorSabores {
 
-    private List<Sabores> sabores;
-    private List<TipoSabor> tipos;
+    private final SaboresDao saboresDao;
+    private final TipoSaboresDao tipoSaboresDao;
 
     public GerenciadorSabores() {
-        this.tipos = new ArrayList<>();
-        TipoSabor simples = new TipoSabor("Simples", 0.10);
-        TipoSabor especial = new TipoSabor("Especial", 0.20);
-        TipoSabor premium  = new TipoSabor("Premium",  0.35);
-        tipos.add(simples);
-        tipos.add(especial);
-        tipos.add(premium);
-
-        this.sabores = new ArrayList<>();
-        sabores.add(new Sabores(simples, "Mussarela"));
-        sabores.add(new Sabores(simples, "Calabresa"));
-        sabores.add(new Sabores(especial, "Frango c/ Catupiry"));
-        sabores.add(new Sabores(especial, "Quatro Queijos"));
-        sabores.add(new Sabores(premium,  "Pepperoni"));
-        sabores.add(new Sabores(premium,  "Trufada"));
+        this.saboresDao = new SaboresDao();
+        this.tipoSaboresDao = TipoSaboresDao.getTipoSaboresDao();
     }
 
-    public void adicionarSabor(Sabores sabor) {
-        for (Sabores s : sabores)
-            if (s.getNome().equalsIgnoreCase(sabor.getNome()))
+    public void adicionarSabor(Sabores sabor) throws Exception {
+        for (Sabores s : listarTodos()) {
+            if (s.getNome().equalsIgnoreCase(sabor.getNome())) {
                 throw new IllegalArgumentException("Já existe um sabor com este nome.");
-        sabores.add(sabor);
+            }
+        }
+        saboresDao.add(sabor);
     }
 
-    public void atualizarSabor(int index, String novoNome, TipoSabor novoTipo) {
-        if (index < 0 || index >= sabores.size())
-            throw new IllegalArgumentException("Sabor não encontrado.");
-        sabores.get(index).setNome(novoNome);
-        sabores.get(index).setTipoSabor(novoTipo);
+    public void atualizarSabor(Sabores sabor) throws Exception {
+        if (sabor == null || sabor.getId() == null) {
+            throw new IllegalArgumentException("Sabor inválido para atualização.");
+        }
+        saboresDao.update(sabor);
     }
 
-    public void removerSabor(int index) {
-        if (index < 0 || index >= sabores.size())
-            throw new IllegalArgumentException("Sabor não encontrado.");
-        sabores.remove(index);
+    public void removerSabor(Sabores sabor) throws Exception {
+        if (sabor == null || sabor.getId() == null) {
+            throw new IllegalArgumentException("Sabor inválido para exclusão.");
+        }
+        saboresDao.delete(sabor);
     }
 
-    public List<Sabores> listarTodos() { return new ArrayList<>(sabores); }
-    public List<TipoSabor> listarTipos() { return new ArrayList<>(tipos); }
+    public void atualizarPrecoTipo(TipoSabor tipo) throws Exception {
+        if (tipo.getPreco() <= 0) {
+            throw new IllegalArgumentException("Preço deve ser positivo.");
+        }
+        tipoSaboresDao.update(tipo);
+    }
+
+    public List<Sabores> listarTodos() throws Exception {
+        return saboresDao.getAll();
+    }
+
+    public List<TipoSabor> listarTipos() throws Exception {
+        return tipoSaboresDao.getAll();
+    }
 }

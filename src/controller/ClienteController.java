@@ -6,42 +6,23 @@ import view.TelaCliente;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.text.MaskFormatter;
 import java.awt.event.ActionEvent;
-import java.text.ParseException;
 import java.util.List;
 
-/**
- * Controlador que comunica a View dos Clientes (Tela Visual) com as
- * Classes e Gerenciadores de Dados
- *
- * @version 1.0
- */
 public class ClienteController {
 
     private final TelaCliente view;
     private final GerenciadorCliente gerenciador;
 
-    /**
-     * Construtor do Controlador.
-     *
-     * @param view        A tela de clientes (TelaCliente).
-     * @param gerenciador A classe que gerencia a lista e regras de negócio.
-     */
     public ClienteController(TelaCliente view, GerenciadorCliente gerenciador) {
         this.view = view;
         this.gerenciador = gerenciador;
 
         inicializarEventos();
-
-        atualizarTabela(this.gerenciador.listarTodos());
+        carregarTabelaCompleta();
     }
 
-    /**
-     * Mapeia cada botão com sua respectiva ação
-     */
     private void inicializarEventos() {
-
         view.getBtnSalvar().addActionListener((ActionEvent e) -> acaoSalvar());
         view.getBtnLimpar().addActionListener((ActionEvent e) -> limparCampos());
         view.getBtnExcluir().addActionListener((ActionEvent e) -> acaoExcluir());
@@ -54,25 +35,17 @@ public class ClienteController {
         });
 
         view.getTxtPesquisa().getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
-            @Override
-            public void insertUpdate(javax.swing.event.DocumentEvent e) {
-                executarFiltro();
-            }
-
-            @Override
-            public void removeUpdate(javax.swing.event.DocumentEvent e) {
-                executarFiltro();
-            }
-
-            @Override
-            public void changedUpdate(javax.swing.event.DocumentEvent e) {
-                executarFiltro();
-            }
+            @Override public void insertUpdate(javax.swing.event.DocumentEvent e) { executarFiltro(); }
+            @Override public void removeUpdate(javax.swing.event.DocumentEvent e) { executarFiltro(); }
+            @Override public void changedUpdate(javax.swing.event.DocumentEvent e) { executarFiltro(); }
 
             private void executarFiltro() {
-                String termo = view.getTxtPesquisa().getText();
-                List<Cliente> filtrados = gerenciador.filtrarClientes(termo);
-                atualizarTabela(filtrados);
+                try {
+                    String termo = view.getTxtPesquisa().getText();
+                    atualizarTabela(gerenciador.filtrarClientes(termo));
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(view, "Erro ao filtrar clientes: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
 
@@ -82,6 +55,14 @@ public class ClienteController {
                 view.getTxtTelefone(),
                 view.getTxtPesquisa()
         );
+    }
+
+    private void carregarTabelaCompleta() {
+        try {
+            atualizarTabela(gerenciador.listarTodos());
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(view, "Erro ao carregar clientes: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void acaoSalvar() {
@@ -95,15 +76,12 @@ public class ClienteController {
         }
 
         try {
-            Cliente novoCliente = new Cliente(nome, sobrenome, telefone);
+            Cliente novoCliente = new Cliente(null, nome, sobrenome, telefone);
             gerenciador.adicionarCliente(novoCliente);
 
             JOptionPane.showMessageDialog(view, "Cliente cadastrado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
-
             limparCampos();
-            atualizarTabela(gerenciador.listarTodos());
-
-        } catch (IllegalArgumentException ex) {
+        } catch (Exception ex) {
             JOptionPane.showMessageDialog(view, ex.getMessage(), "Erro de Cadastro", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -123,13 +101,16 @@ public class ClienteController {
                 "Confirmar Exclusão", JOptionPane.YES_NO_OPTION);
 
         if (confirmacao == JOptionPane.YES_OPTION) {
-            boolean removido = gerenciador.removerCliente(telefoneParaExcluir);
-            if (removido) {
-                JOptionPane.showMessageDialog(view, "Cliente removido com sucesso.");
-                limparCampos();
-                atualizarTabela(gerenciador.listarTodos());
-            } else {
-                JOptionPane.showMessageDialog(view, "Erro ao remover o cliente.", "Erro", JOptionPane.ERROR_MESSAGE);
+            try {
+                boolean removido = gerenciador.removerCliente(telefoneParaExcluir);
+                if (removido) {
+                    JOptionPane.showMessageDialog(view, "Cliente removido com sucesso.");
+                    limparCampos();
+                } else {
+                    JOptionPane.showMessageDialog(view, "Cliente não encontrado.", "Erro", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(view, "Erro ao remover cliente: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -143,7 +124,6 @@ public class ClienteController {
         }
 
         String telefoneAntigo = (String) view.getModeloTabela().getValueAt(linhaSelecionada, 2);
-
         String nomeNovo = view.getTxtNome().getText().trim();
         String sobrenomeNovo = view.getTxtSobrenome().getText().trim();
         String telefoneNovo = view.getTxtTelefone().getText().trim();
@@ -154,21 +134,18 @@ public class ClienteController {
         }
 
         try {
-            Cliente dadosNovos = new Cliente(nomeNovo, sobrenomeNovo, telefoneNovo);
+            Cliente dadosNovos = new Cliente(null, nomeNovo, sobrenomeNovo, telefoneNovo);
             gerenciador.atualizarCliente(telefoneAntigo, dadosNovos);
 
             JOptionPane.showMessageDialog(view, "Dados atualizados com sucesso!");
             limparCampos();
-            atualizarTabela(gerenciador.listarTodos());
-
-        } catch (IllegalArgumentException ex) {
+        } catch (Exception ex) {
             JOptionPane.showMessageDialog(view, ex.getMessage(), "Erro na Atualização", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void preencherFormularioComLinhaSelecionada() {
         int linha = view.getTabelaClientes().getSelectedRow();
-
         view.getTxtNome().setText((String) view.getModeloTabela().getValueAt(linha, 0));
         view.getTxtSobrenome().setText((String) view.getModeloTabela().getValueAt(linha, 1));
         view.getTxtTelefone().setText((String) view.getModeloTabela().getValueAt(linha, 2));
@@ -180,31 +157,18 @@ public class ClienteController {
         view.getTxtTelefone().setText("");
         view.getTxtPesquisa().setText("");
         view.getTabelaClientes().clearSelection();
-
-        atualizarTabela(gerenciador.listarTodos());
+        carregarTabelaCompleta();
     }
 
-    private void atualizarTabela(List<Cliente> lista)  {
-
+    private void atualizarTabela(List<Cliente> lista) {
         DefaultTableModel modelo = view.getModeloTabela();
         modelo.setRowCount(0);
 
         for (Cliente c : lista) {
-            Object[] linha = {
-                    c.getNome(),
-                    c.getSobrenome(),
-                    c.getTelefone()
-            };
-            modelo.addRow(linha);
+            modelo.addRow(new Object[]{ c.getNome(), c.getSobrenome(), c.getTelefone() });
         }
     }
 
-    /**
-     * Aplica um KeyListener para ignorar o alerta do Windows
-     * ao pressionar Backspace em caixas de texto vazias.
-     *
-     * @param campos Sequência de JTextFields.
-     */
     private void silenciarCamposVazios(JTextField... campos) {
         for (JTextField campo : campos) {
             campo.addKeyListener(new java.awt.event.KeyAdapter() {

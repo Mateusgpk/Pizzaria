@@ -9,6 +9,8 @@ package model;
  */
 public class Cliente {
 
+
+    private Long id;
     private String nome;
     private String sobrenome;
     private Pedido pedido;
@@ -21,12 +23,21 @@ public class Cliente {
      * @param sobrenome Sobrenome do cliente.
      * @param telefone  Telefone de contato
      */
-    public Cliente(String nome, String sobrenome, String telefone) {
+
+    public Cliente(Long id,String nome, String sobrenome, String telefone) {
+        this.id=id;
         this.nome = nome;
         this.sobrenome = sobrenome;
         setTelefone(telefone);
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
     /**
      * Retorna o primeiro nome do cliente.
      *

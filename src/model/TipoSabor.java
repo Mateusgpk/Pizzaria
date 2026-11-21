@@ -1,12 +1,22 @@
 package model;
 
 public class TipoSabor {
+    private Long id;
     private String nome;
     private Double precocm;
 
-    public TipoSabor (String nome, Double precocm){
+    public TipoSabor (Long id, String nome, Double precocm){
+        this.id=id;
         this.nome=nome;
         this.precocm=precocm;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getNome() {

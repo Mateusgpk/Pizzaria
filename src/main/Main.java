@@ -17,7 +17,12 @@ public class Main {
         }
 
         SwingUtilities.invokeLater(() -> {
-            JanelaPrincipal janela = new JanelaPrincipal();
+            JanelaPrincipal janela = null;
+            try {
+                janela = new JanelaPrincipal();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
             janela.setVisible(true);
         });
     }

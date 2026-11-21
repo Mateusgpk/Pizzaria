@@ -4,21 +4,16 @@ import DAO.GerenciadorCliente;
 import model.Cliente;
 import view.TelaPedido;
 
+import javax.swing.*;
 import java.util.List;
 
-/**
- * Controlador da TelaPedido.
- * Segue o mesmo padrão do ClienteController e PizzaController.
- *
- * @version 1.0
- */
 public class PedidoController {
 
-    private final TelaPedido      view;
+    private final TelaPedido view;
     private final GerenciadorCliente daoCliente;
 
     public PedidoController(TelaPedido view, GerenciadorCliente daoCliente) {
-        this.view      = view;
+        this.view = view;
         this.daoCliente = daoCliente;
         inicializarEventos();
     }
@@ -35,29 +30,29 @@ public class PedidoController {
             return;
         }
 
-        List<Cliente> todos = daoCliente.listarTodos();
-        Cliente encontrado = null;
+        try {
+            List<Cliente> todos = daoCliente.listarTodos();
+            Cliente encontrado = null;
 
-        // Prepara os termos fora do loop para otimizar
-        String termoMinusculo = termo.toLowerCase();
-        String termoSomenteNumeros = termo.replaceAll("\\D", "");
+            String termoMinusculo = termo.toLowerCase();
+            String termoSomenteNumeros = termo.replaceAll("\\D", "");
 
-        for (Cliente c : todos) {
-            String nomeCompleto = (c.getNome() + " " + c.getSobrenome()).toLowerCase();
-            String telefoneLimpo = c.getTelefone().replaceAll("\\D", "");
+            for (Cliente c : todos) {
+                String nomeCompleto = (c.getNome() + " " + c.getSobrenome()).toLowerCase();
+                String telefoneLimpo = c.getTelefone().replaceAll("\\D", "");
 
-            // Verifica se o termo bate com alguma parte do nome completo
-            boolean bateNome = nomeCompleto.contains(termoMinusculo);
+                boolean bateNome = nomeCompleto.contains(termoMinusculo);
+                boolean bateTelefone = !termoSomenteNumeros.isEmpty() && telefoneLimpo.contains(termoSomenteNumeros);
 
-            // Só verifica o telefone se o usuário digitou algum número na busca
-            boolean bateTelefone = !termoSomenteNumeros.isEmpty() && telefoneLimpo.contains(termoSomenteNumeros);
-
-            if (bateNome || bateTelefone) {
-                encontrado = c;
-                break;
+                if (bateNome || bateTelefone) {
+                    encontrado = c;
+                    break;
+                }
             }
-        }
 
-        view.exibirClienteEncontrado(encontrado);
+            view.exibirClienteEncontrado(encontrado);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(view, "Erro ao buscar cliente: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        }
     }
 }

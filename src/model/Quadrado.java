@@ -2,19 +2,33 @@ package model;
 
 import java.util.List;
 
-public class Quadrado extends Pizza {
+public class Quadrado implements Forma {
 
     public static final double ladoMinimo = 10.0;
     public static final double ladoMaximo = 40.0;
+    private Long id;
+
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public int getNumbForma() {
+        return 2;
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     private double lado;
 
-    public Quadrado(double lado, List<Sabores> sabores) {
-        super(sabores);
+    public Quadrado(double lado) {
         validarDimensao(lado);
         this.lado = lado;
-        this.setCms(calcularArea());
-        setPreco(calculaPrecoInteiro());
+
     }
 
     @Override
