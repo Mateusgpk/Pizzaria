@@ -1,20 +1,22 @@
 package controller;
 
+import DAO.GerenciaPedidoPizza;
 import DAO.GerenciadorCliente;
 import model.Cliente;
 import view.TelaPedido;
 
 import javax.swing.*;
-import java.util.List;
 
 public class PedidoController {
 
     private final TelaPedido view;
     private final GerenciadorCliente daoCliente;
+    private final GerenciaPedidoPizza gerenciaPedido;
 
-    public PedidoController(TelaPedido view, GerenciadorCliente daoCliente) {
+    public PedidoController(TelaPedido view, GerenciadorCliente daoCliente, GerenciaPedidoPizza gerenciaPedido) {
         this.view = view;
         this.daoCliente = daoCliente;
+        this.gerenciaPedido = gerenciaPedido;
         inicializarEventos();
     }
 
@@ -23,34 +25,30 @@ public class PedidoController {
     }
 
     private void acaoBuscarCliente() {
-        String termo = view.getTxtBuscaCliente().getText().trim();
+        String telefone = view.getTxtBuscaCliente().getText().replaceAll("\\D", "");
 
-        if (termo.isEmpty()) {
-            view.exibirClienteEncontrado(null);
+        if (telefone.isEmpty()) {
+            try {
+                gerenciaPedido.carregarPedidoDoCliente(null);
+            } catch (Exception ignored) {
+            }
+            view.carregarDadosDoPedidoAtual();
             return;
         }
 
         try {
-            List<Cliente> todos = daoCliente.listarTodos();
-            Cliente encontrado = null;
-
-            String termoMinusculo = termo.toLowerCase();
-            String termoSomenteNumeros = termo.replaceAll("\\D", "");
-
-            for (Cliente c : todos) {
-                String nomeCompleto = (c.getNome() + " " + c.getSobrenome()).toLowerCase();
-                String telefoneLimpo = c.getTelefone().replaceAll("\\D", "");
-
-                boolean bateNome = nomeCompleto.contains(termoMinusculo);
-                boolean bateTelefone = !termoSomenteNumeros.isEmpty() && telefoneLimpo.contains(termoSomenteNumeros);
-
-                if (bateNome || bateTelefone) {
-                    encontrado = c;
-                    break;
+            Cliente encontrado = daoCliente.buscarPorTelefone(telefone);
+            if (encontrado == null) {
+                for (Cliente c : daoCliente.listarTodos()) {
+                    if (c.getTelefone().contains(telefone)) {
+                        encontrado = c;
+                        break;
+                    }
                 }
             }
 
-            view.exibirClienteEncontrado(encontrado);
+            gerenciaPedido.carregarPedidoDoCliente(encontrado);
+            view.carregarDadosDoPedidoAtual();
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(view, "Erro ao buscar cliente: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
