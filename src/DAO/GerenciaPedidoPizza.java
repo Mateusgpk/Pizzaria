@@ -73,20 +73,18 @@ public class GerenciaPedidoPizza {
         pedido.setStatus(novoStatus);
         pedidoDao.update(pedido);
     }
-    public Pizza fazerAdicionarPizza(Double lado, int formato, List<Sabores> sabores) {
-        Forma forma = switch (formato) {
-            case 1 -> new Circulo(lado);
-            case 2 -> new Quadrado(lado);
-            case 3 -> new Triangulo(lado);
-            default -> throw new IllegalArgumentException("Formato inválido.");
-        };
+    public Pizza fazerAdicionarPizza(Double valor, int formato, List<Sabores> sabores, boolean porArea) {
+        Forma forma = porArea
+                ? Forma.criarPorArea(formato, valor)
+                : Forma.criarPorDimensao(formato, valor);
 
         Pizza nova = new Pizza(null, null, sabores, forma);
-        nova.setTipoForma(formato);
-        nova.setDimensao(lado);
-
         adicionarPizza(nova);
         return nova;
+    }
+
+    public Pizza fazerAdicionarPizza(Double lado, int formato, List<Sabores> sabores) {
+        return fazerAdicionarPizza(lado, formato, sabores, false);
     }
 
     public void removePedido(Pedido pedido) throws Exception {
@@ -159,15 +157,6 @@ public class GerenciaPedidoPizza {
     }
 
     public double calcularDimensaoPorArea(int formato, double area) {
-        if (area < 100.0 || area > 1600.0) {
-            throw new IllegalArgumentException("A área informada deve estar entre 100 e 1600 cm².");
-        }
-
-        return switch (formato) {
-            case 1 -> Math.sqrt(area / Math.PI);
-            case 2 -> Math.sqrt(area);
-            case 3 -> Math.sqrt((4.0 * area) / Math.sqrt(3));
-            default -> throw new IllegalArgumentException("Formato inválido.");
-        };
+        return Forma.criarPorArea(formato, area).getDimensao();
     }
 }
