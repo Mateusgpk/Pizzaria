@@ -71,7 +71,7 @@ public class TelaPedido extends JPanel {
         g.fill = GridBagConstraints.HORIZONTAL;
 
         g.gridx = 0; g.gridy = 0; g.weightx = 0;
-        painel.add(new JLabel("Buscar por nome ou telefone:"), g);
+        painel.add(new JLabel("Buscar por telefone:"), g);
 
         g.gridx = 1; g.weightx = 1.0;
         txtBuscaCliente = new JTextField();
@@ -417,34 +417,28 @@ public class TelaPedido extends JPanel {
             txtBuscaCliente.setText(p.getCliente().getTelefone());
         } else {
             exibirClienteEncontrado(null);
-            txtBuscaCliente.setText("");
         }
 
         modeloTabela.setRowCount(0);
 
         if (p.getListaPizza() != null) {
             for (Pizza pizza : p.getListaPizza()) {
-                String formato = pizza.getClass().getSimpleName();
-
-                // NOVO: Como Pizza implementa Forma, podemos pegar a dimensão nativa dela
-                double dimensao =  pizza.getForma().getDimensao();
-
+                String formato = pizza.getForma().getNomeForma();
+                double dimensao = pizza.getForma().getDimensao();
                 String s1 = pizza.getsabor1();
-                String s2 = "";
-                if (pizza.getSabores().size() > 1) {
-                    s2 = pizza.getsabor2();
-                }
+                String s2 = pizza.getSabores().size() > 1 ? pizza.getsabor2() : "—";
 
                 modeloTabela.addRow(new Object[]{
                         formato,
                         String.format("%.2f", dimensao),
-                        String.format("%.2f", pizza.getCms()), // Área
+                        String.format("%.2f", pizza.getCms()),
                         s1,
                         s2,
                         String.format("R$ %.2f", pizza.calculaPrecoInteiro())
                 });
             }
         }
+        atualizarValorTotal();
     }
 
     private void atualizarEstadoFormulario(boolean habilitado) {
