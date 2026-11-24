@@ -82,8 +82,12 @@ public class PizzaDao implements Dao<Pizza>{
             List<Pizza> list = new ArrayList();
             while (resultSet.next()) {
                 long id = resultSet.getLong("id");
-                Forma forma=criarForma(resultSet.getInt("tipoForma"),resultSet.getDouble("dimensao"));
-                list.add(new Pizza( id,resultSet.getLong("idPedido"),saboresDao.getAllPizza(id),forma));
+                Forma forma = criarForma(
+                        resultSet.getInt("tipoForma"),
+                        resultSet.getDouble("dimensao"),
+                        resultSet.getDouble("cms")
+                );
+                list.add(new Pizza(id, resultSet.getLong("idPedido"), saboresDao.getAllPizza(id), forma));
             }
             return list;
         }
@@ -91,12 +95,15 @@ public class PizzaDao implements Dao<Pizza>{
     }
 
     public Forma criarForma(int tipo, double dimensao) {
-        return switch (tipo) {
-            case 1 -> new Circulo(dimensao);
-            case 2 -> new Quadrado(dimensao);
-            case 3 -> new Triangulo(dimensao);
-            default -> throw new IllegalArgumentException("Forma inválida");
-        };
+        return Forma.criarPorDimensao(tipo, dimensao);
+    }
+
+    public Forma criarForma(int tipo, double dimensao, double cms) {
+        try {
+            return Forma.criarPorDimensao(tipo, dimensao);
+        } catch (IllegalArgumentException e) {
+            return Forma.criarPorArea(tipo, Math.round(cms * 100.0) / 100.0);
+        }
     }
 
     @Override
