@@ -9,6 +9,14 @@ public class Quadrado extends Forma {
         super(lado);
     }
 
+    private Quadrado(double area, boolean porArea) {
+        super(area, porArea);
+    }
+
+    public static Quadrado porArea(double area) {
+        return new Quadrado(area, true);
+    }
+
     @Override
     public double calcularArea() {
         return getDimensao() * getDimensao();

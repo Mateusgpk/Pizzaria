@@ -9,6 +9,14 @@ public class Triangulo extends Forma {
         super(lado);
     }
 
+    private Triangulo(double area, boolean porArea) {
+        super(area, porArea);
+    }
+
+    public static Triangulo porArea(double area) {
+        return new Triangulo(area, true);
+    }
+
     @Override
     public double calcularArea() {
         return (Math.sqrt(3) / 4.0) * getDimensao() * getDimensao();

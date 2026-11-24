@@ -6,6 +6,14 @@ public class Circulo extends Forma {
     public Circulo(double raio) {
         super(raio);
     }
+
+    private Circulo(double area, boolean porArea) {
+        super(area, porArea);
+    }
+
+    public static Circulo porArea(double area) {
+        return new Circulo(area, true);
+    }
     @Override
     public double calcularArea() {
         return Math.PI * getDimensao() * getDimensao();
