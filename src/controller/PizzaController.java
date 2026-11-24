@@ -118,16 +118,28 @@ public class PizzaController {
     }
 
     private void acaoSalvarPrecos() {
+        if (view.getTabelaPrecos().isEditing()) {
+            view.getTabelaPrecos().getCellEditor().stopCellEditing();
+        }
         try {
             List<TipoSabor> tipos = gerenciador.listarTipos();
             DefaultTableModel modelo = view.getModeloTabelaPrecos();
 
             for (int i = 0; i < tipos.size(); i++) {
-                String valor = modelo.getValueAt(i, 1).toString().replace(",", ".");
+                Object celula = modelo.getValueAt(i, 1);
+                if (celula == null || celula.toString().trim().isEmpty()) {
+                    throw new NumberFormatException();
+                }
+                String valor = celula.toString().trim().replace(",", ".");
                 double preco = Double.parseDouble(valor);
                 tipos.get(i).setPreco(preco);
-                gerenciador.atualizarPrecoTipo(tipos.get(i));
             }
+
+            for (TipoSabor tipo : tipos) {
+                gerenciador.atualizarPrecoTipo(tipo);
+            }
+
+            viewPedido.recarregarSabores();
             JOptionPane.showMessageDialog(view, "Preços atualizados com sucesso!");
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(view, "Valor inválido. Use apenas números (ex: 0.25).", "Erro", JOptionPane.ERROR_MESSAGE);
