@@ -65,7 +65,7 @@ public class JanelaPrincipal extends JFrame {
         TelaPizza telaPizzas = new TelaPizza(daoSabores.listarTipos());
         new PizzaController(telaPizzas, daoSabores,telaPedidos);
 
-        PedidoController pedidoController = new PedidoController(telaPedidos, daoCliente);
+        PedidoController pedidoController = new PedidoController(telaPedidos, daoCliente, daoPedidoPizza);
         TelaHistoricoPedidos telaHistorico = new TelaHistoricoPedidos(daoPedidoPizza, () -> {
             telaPedidos.carregarDadosDoPedidoAtual();
             alternarTela("PEDIDOS", "Painel de Pedidos e Entregas");
