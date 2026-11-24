@@ -41,11 +41,12 @@ public class GerenciaPedidoPizza {
 
     public List<Pedido> getHistoricoPedidos() throws Exception {
         List<Pedido> pedidos = pedidoDao.getAll();
-        for (Pedido pedido1 : pedidos){
-            System.out.println(pedido1.getCliente());
-            System.out.println(pedido1.getId());
+        for (Pedido pedido1 : pedidos) {
+            double valorSalvo = pedido1.getValorTotal();
             pedido1.setListaPizza(new ArrayList<>(pizzaDao.getAllPizzasPedido(pedido1.getId())));
-            calcularValorPedido(pedido1);
+            if (valorSalvo > 0) {
+                pedido1.setValorTotal(valorSalvo);
+            }
         }
         return pedidos;
     }
@@ -101,22 +102,20 @@ public class GerenciaPedidoPizza {
         }
 
         this.pedido.setCliente(this.cliente);
+        calcularValorPedido();
 
-        // 1. Salva o pedido no banco (o DAO preenche o ID gerado)
-        if (pedido.getId()==null) {
+        if (pedido.getId() == null) {
             pedidoDao.add(this.pedido);
-        }else{
+        } else {
             pedidoDao.update(this.pedido);
             pizzaDao.deleteByIdPedido(this.pedido.getId());
         }
 
-        // 2. Salva cada pizza vinculada ao ID do pedido gerado
         for (Pizza pizza : this.pedido.getListaPizza()) {
             pizza.setIdPedido(this.pedido.getId());
             pizzaDao.add(pizza);
         }
 
-        // 3. Limpa o carrinho para o próximo pedido
         this.cliente = null;
         this.pedido = new Pedido();
     }
@@ -124,6 +123,27 @@ public class GerenciaPedidoPizza {
     public void carregarPedidoParaEdicao(Pedido pedidoAntigo) {
         this.pedido = pedidoAntigo;
         this.cliente = pedidoAntigo.getCliente();
+    }
+
+    public void carregarPedidoDoCliente(Cliente cliente) throws Exception {
+        if (cliente == null) {
+            this.cliente = null;
+            this.pedido = new Pedido();
+            return;
+        }
+        Pedido pedidoAberto = pedidoDao.getPedidoAbertoPorCliente(cliente.getId());
+        if (pedidoAberto != null) {
+            double valorSalvo = pedidoAberto.getValorTotal();
+            pedidoAberto.setListaPizza(new ArrayList<>(pizzaDao.getAllPizzasPedido(pedidoAberto.getId())));
+            if (valorSalvo > 0) {
+                pedidoAberto.setValorTotal(valorSalvo);
+            }
+            this.pedido = pedidoAberto;
+        } else {
+            this.pedido = new Pedido();
+            this.pedido.setCliente(cliente);
+        }
+        this.cliente = cliente;
     }
 
     public void removerPizzaPorIndice(int index) {
