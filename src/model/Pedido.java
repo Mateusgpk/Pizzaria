@@ -19,6 +19,11 @@ public class Pedido {
     }
 
     public void setStatus(String status) {
+        if (status == null || (!status.equals("Aberto")
+                && !status.equals("A Caminho")
+                && !status.equals("Entregue"))) {
+            throw new IllegalArgumentException("Status inválido. Use: Aberto, A Caminho ou Entregue.");
+        }
         this.status = status;
     }
 
@@ -32,9 +37,11 @@ public class Pedido {
         this.listaPizza = new ArrayList<>();
         this.valorTotal = 0.0;
     }
+
     public Cliente getCliente() {
         return cliente;
     }
+
     public void setCliente(Cliente cliente) {
         this.cliente = cliente;
     }
@@ -65,6 +72,7 @@ public class Pedido {
         }
         this.valorTotal = total;
     }
+
     public void setId(Long i) {
         this.id = i;
     }

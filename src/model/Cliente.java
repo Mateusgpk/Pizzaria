@@ -24,10 +24,10 @@ public class Cliente {
      * @param telefone  Telefone de contato
      */
 
-    public Cliente(Long id,String nome, String sobrenome, String telefone) {
-        this.id=id;
-        this.nome = nome;
-        this.sobrenome = sobrenome;
+    public Cliente(Long id, String nome, String sobrenome, String telefone) {
+        this.id = id;
+        setNome(nome);
+        setSobrenome(sobrenome);
         setTelefone(telefone);
     }
 
@@ -53,7 +53,10 @@ public class Cliente {
      * @param nome O novo nome a ser atribuído.
      */
     public void setNome(String nome) {
-        this.nome = nome;
+        if (nome == null || nome.trim().isEmpty() || !nome.trim().matches("[\\p{L}\\s'-]+")) {
+            throw new IllegalArgumentException("Nome inválido. Informe apenas letras.");
+        }
+        this.nome = nome.trim();
     }
 
     /**
@@ -71,7 +74,10 @@ public class Cliente {
      * @param sobrenome O novo sobrenome a ser atribuído.
      */
     public void setSobrenome(String sobrenome) {
-        this.sobrenome = sobrenome;
+        if (sobrenome == null || sobrenome.trim().isEmpty() || !sobrenome.trim().matches("[\\p{L}\\s'-]+")) {
+            throw new IllegalArgumentException("Sobrenome inválido. Informe apenas letras.");
+        }
+        this.sobrenome = sobrenome.trim();
     }
 
     /**
@@ -107,11 +113,11 @@ public class Cliente {
      * @param telefone O novo telefone a ser atribuído.
      */
     public void setTelefone(String telefone) {
-        if (telefone == null || !telefone.matches("\\d{10,11}")) {
+        String somenteDigitos = (telefone == null) ? "" : telefone.replaceAll("\\D", "");
+        if (!somenteDigitos.matches("\\d{10,11}")) {
             throw new IllegalArgumentException("O telefone deve ter 10 ou 11 dígitos.");
         }
-
-        this.telefone = telefone;
+        this.telefone = somenteDigitos;
     }
 
     /**

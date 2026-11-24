@@ -1,5 +1,7 @@
 package model;
 
+import java.util.Objects;
+
 public class Sabores {
     private Long id;
     private TipoSabor tipoSabor;
@@ -34,4 +36,25 @@ public class Sabores {
     public void setNome(String nome) {
         this.nome = nome;
     }
+
+    @Override
+    public String toString() {
+        return nome;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Sabores that)) return false;
+        if (this.id != null && that.id != null) {
+            return Objects.equals(this.id, that.id);
+        }
+        return this.nome != null && this.nome.equalsIgnoreCase(that.nome);
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? Objects.hash(id) : Objects.hash(nome == null ? null : nome.toLowerCase());
+    }
+
 }
