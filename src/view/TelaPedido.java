@@ -322,30 +322,23 @@ public class TelaPedido extends JPanel {
         }
 
         int formato = cbFormato.getSelectedIndex() + 1;
-        double dimensaoFinal = valorInput; // Por padrão, assume que o usuário digitou a dimensão
+        boolean porArea = cbModoEntrada.getSelectedIndex() == 1;
 
         try {
-            // NOVO: Verifica se o usuário escolheu digitar a Área em vez da Dimensão
-            if (cbModoEntrada.getSelectedIndex() == 1) {
-                dimensaoFinal = gerencia.calcularDimensaoPorArea(formato, valorInput);
+            Pizza pizzaCriada = gerencia.fazerAdicionarPizza(valorInput, formato, sabores, porArea);
+            double dimensaoFinal = pizzaCriada.getDimensao();
 
-                // Exibe para o usuário qual foi a dimensão calculada pelo sistema
+            if (porArea) {
                 JOptionPane.showMessageDialog(this,
-                        String.format("Área solicitada: %.2f cm²\nDimensão (Lado/Raio) calculada: %.2f cm", valorInput, dimensaoFinal),
+                        String.format("Área solicitada: %.2f cm²\n%s calculado: %.2f cm",
+                                valorInput, pizzaCriada.getForma().nomeDimensao(), dimensaoFinal),
                         "Cálculo de Área", JOptionPane.INFORMATION_MESSAGE);
             }
 
-            // Tenta adicionar a pizza usando a dimensão (seja a digitada ou a recém-calculada)
-            gerencia.fazerAdicionarPizza(dimensaoFinal, formato, sabores);
-
-            // Se passou daqui, a pizza foi criada com sucesso (passou nas validações).
-            // Pega a última pizza adicionada para extrair a área exata calculada na Entidade
-            Pizza pizzaCriada = gerencia.getPedido().getListaPizza().get(gerencia.getPedido().getListaPizza().size() - 1);
-
             modeloTabela.addRow(new Object[]{
-                    cbFormato.getSelectedItem(),
+                    pizzaCriada.getForma().getNomeForma(),
                     String.format("%.2f", dimensaoFinal),
-                    String.format("%.2f", pizzaCriada.getCms()), // Área real armazenada
+                    String.format("%.2f", pizzaCriada.getCms()),
                     s1.getNome(),
                     nomeSabor2,
                     String.format("R$ %.2f", pizzaCriada.calculaPrecoInteiro())
